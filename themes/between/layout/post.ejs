@@ -23,7 +23,10 @@
       <%- partial('_partial/article-onchain', { articleChain: article_onchain_meta(page.slug) }) %>
     </header>
     <% if (page.original_url) { %>
-      <p class="article-origin">本文同步自原博客 <span aria-hidden="true">·</span> <a href="<%= page.original_url %>" target="_blank" rel="noopener noreferrer">阅读原文&nbsp;↗</a></p>
+      <p class="article-origin">
+        本文通过自动化程序同步自原博客，完整阅读体验请
+        <a href="<%= page.original_url %>" target="_blank" rel="noopener noreferrer">前往原博客<span class="article-origin-arrow" aria-hidden="true">↗</span></a>
+      </p>
     <% } %>
     <div class="article-content"><%- page.content %></div>
     <footer class="article-footer">

@@ -899,22 +899,36 @@ html.is-leaving .site-footer {
 
 .article-origin {
   margin: 0 0 44px;
+  padding-left: 14px;
+  border-left: 2px solid color-mix(in srgb, var(--accent), transparent 30%);
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-  white-space: nowrap;
+  font-size: 14px;
+  line-height: 1.75;
 }
 
 .article-origin a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--accent);
-  font-weight: 620;
+  font-weight: 650;
   text-decoration: none;
-  transition: opacity 150ms ease;
+  text-underline-offset: 4px;
+  transition: opacity 150ms ease, text-decoration-color 150ms ease;
+}
+
+.article-origin-arrow {
+  transition: transform 150ms ease;
 }
 
 .article-origin a:hover,
 .article-origin a:focus-visible {
-  opacity: 0.68;
+  text-decoration: underline;
+}
+
+.article-origin a:hover .article-origin-arrow,
+.article-origin a:focus-visible .article-origin-arrow {
+  transform: translate(2px, -2px);
 }
 
 .article-content {
