@@ -29,11 +29,11 @@
 
   <% const onchain = onchain_meta(theme.about.onchain || {}); %>
   <% const onchainItems = [
-    { label: 'Wallet Address', value: onchain.wallet_address },
-    { label: 'Block Height', value: onchain.block_height },
-    { label: 'Latest Block Height', value: onchain.latest_block_height },
-    { label: 'Transaction Hash', value: onchain.transaction_hash },
-    { label: 'Contract Address', value: onchain.contract_address }
+    { label: 'Wallet Address', value: onchain.wallet_address, path: 'address', expandable: true },
+    { label: 'Block Height', value: onchain.block_height, path: 'block' },
+    { label: 'Latest Block Height', value: onchain.latest_block_height, path: 'block', live: true },
+    { label: 'Transaction Hash', value: onchain.transaction_hash, path: 'tx', expandable: true },
+    { label: 'Contract Address', value: onchain.contract_address, path: 'address', expandable: true }
   ]; %>
   <!-- onchain-metadata:start -->
   <div class="details-column onchain-column">
@@ -42,7 +42,23 @@
       <% onchainItems.forEach(function (item) { %>
         <div>
           <dt><%= item.label %></dt>
-          <dd class="<%= item.value ? '' : 'is-empty' %>"><%= item.value || '--' %></dd>
+          <dd class="<%= item.value ? '' : 'is-empty' %>">
+            <% if (item.value) { %>
+              <span class="onchain-value-wrap<%= item.expandable ? ' is-expandable' : '' %>">
+                <a
+                  class="onchain-link"
+                  href="https://polygonscan.com/<%= item.path %>/<%= item.value %>"
+                  target="_blank"
+                  rel="noreferrer"
+                  <% if (item.live) { %>data-latest-block data-rpc-url="https://polygon.drpc.org"<% } %>
+                ><% if (item.live) { %><span class="block-ticker"><span data-block-number><%= item.value %></span></span><% } else { %><%= item.value %><% } %></a>
+                <% if (item.live) { %><span class="live-indicator" title="Live Polygon block height" aria-hidden="true"></span><% } %>
+                <% if (item.expandable) { %>
+                  <button class="onchain-expand" type="button" data-onchain-expand data-label="<%= item.label %>" aria-expanded="false" aria-label="Show full <%= item.label %>" title="Show full <%= item.label %>"></button>
+                <% } %>
+              </span>
+            <% } else { %>--<% } %>
+          </dd>
         </div>
       <% }); %>
     </dl>

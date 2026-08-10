@@ -212,6 +212,98 @@
     });
   });
 
+  document.querySelectorAll('[data-onchain-expand]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var wrapper = button.closest('.onchain-value-wrap');
+      if (!wrapper) return;
+
+      var expanded = wrapper.classList.toggle('is-expanded');
+      var field = button.dataset.label || 'address';
+      button.setAttribute('aria-expanded', String(expanded));
+      button.setAttribute('aria-label', (expanded ? 'Collapse ' : 'Show full ') + field);
+      button.setAttribute('title', (expanded ? 'Collapse ' : 'Show full ') + field);
+    });
+  });
+
+  var latestBlockLink = document.querySelector('[data-latest-block]');
+  if (latestBlockLink) {
+    var latestBlockTimer;
+    var latestBlockRequest;
+    var blockNumberElement = latestBlockLink.querySelector('[data-block-number]');
+    var blockTicker = latestBlockLink.querySelector('.block-ticker');
+    var liveWrapper = latestBlockLink.closest('.onchain-value-wrap');
+
+    function renderLatestBlock(blockNumber) {
+      var nextValue = String(blockNumber);
+      var currentElement = latestBlockLink.querySelector('[data-block-number]');
+      var currentValue = currentElement ? currentElement.textContent.trim() : '';
+
+      latestBlockLink.href = 'https://polygonscan.com/block/' + nextValue;
+      latestBlockLink.setAttribute('aria-label', 'Latest Polygon block ' + nextValue);
+      if (nextValue === currentValue || !currentElement) return;
+
+      if (reducedMotion) {
+        currentElement.textContent = nextValue;
+        return;
+      }
+
+      var nextElement = document.createElement('span');
+      nextElement.dataset.blockNumber = '';
+      nextElement.className = 'is-entering';
+      nextElement.textContent = nextValue;
+      blockTicker.appendChild(nextElement);
+
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          currentElement.classList.add('is-leaving');
+          nextElement.classList.remove('is-entering');
+        });
+      });
+
+      window.setTimeout(function () {
+        currentElement.remove();
+      }, 340);
+    }
+
+    function scheduleLatestBlock(delay) {
+      window.clearTimeout(latestBlockTimer);
+      latestBlockTimer = window.setTimeout(refreshLatestBlock, delay);
+    }
+
+    function refreshLatestBlock() {
+      if (document.hidden) {
+        scheduleLatestBlock(4000);
+        return;
+      }
+
+      latestBlockRequest = new AbortController();
+      var requestTimeout = window.setTimeout(function () {
+        latestBlockRequest.abort();
+      }, 5000);
+
+      fetch(latestBlockLink.dataset.rpcUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber', params: [] }),
+        signal: latestBlockRequest.signal
+      }).then(function (response) {
+        if (!response.ok) throw new Error('Polygon RPC request failed');
+        return response.json();
+      }).then(function (payload) {
+        if (!payload.result) throw new Error('Polygon RPC returned no block number');
+        renderLatestBlock(parseInt(payload.result, 16));
+        if (liveWrapper) liveWrapper.classList.add('is-live');
+      }).catch(function () {
+        if (liveWrapper) liveWrapper.classList.remove('is-live');
+      }).finally(function () {
+        window.clearTimeout(requestTimeout);
+        scheduleLatestBlock(4000);
+      });
+    }
+
+    if (blockNumberElement) refreshLatestBlock();
+  }
+
   var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.article-toc a'));
   if (tocLinks.length) {
     tocLinks[0].classList.add('is-active');
