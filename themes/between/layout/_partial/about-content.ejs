@@ -26,4 +26,24 @@
       <% }); %>
     </dl>
   </div>
+
+  <% const onchain = theme.about.onchain || {}; %>
+  <% const onchainItems = [
+    { label: 'Wallet Address', value: onchain.wallet_address },
+    { label: 'Block Height', value: onchain.block_height },
+    { label: 'Latest Block Height', value: onchain.latest_block_height },
+    { label: 'Transaction Hash', value: onchain.transaction_hash },
+    { label: 'Contract Address', value: onchain.contract_address }
+  ]; %>
+  <div class="details-column onchain-column">
+    <h2>On-chain</h2>
+    <dl class="onchain-list">
+      <% onchainItems.forEach(function (item) { %>
+        <div>
+          <dt><%= item.label %></dt>
+          <dd class="<%= item.value ? '' : 'is-empty' %>"><%= item.value || '--' %></dd>
+        </div>
+      <% }); %>
+    </dl>
+  </div>
 </section>
