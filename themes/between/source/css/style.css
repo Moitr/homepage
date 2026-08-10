@@ -504,6 +504,20 @@ html.is-leaving .site-footer {
   transform: translateY(-80%);
 }
 
+.block-height-pair {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.block-height-arrow {
+  color: var(--faint);
+  font-family: inherit;
+}
+
 .live-indicator {
   flex: 0 0 auto;
   width: 5px;
