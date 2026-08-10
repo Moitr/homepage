@@ -1,0 +1,29 @@
+<% if (articleChain && articleChain.contract_address) { %>
+  <div class="article-onchain" aria-label="On-chain publication">
+    <div class="article-onchain-row">
+      <span class="article-onchain-label">Block Height</span>
+      <span class="onchain-value-wrap">
+        <span class="block-height-pair">
+          <span class="onchain-text" title="Publication block"><%= articleChain.block_height %></span>
+          <span class="block-height-arrow" aria-hidden="true">&rarr;</span>
+          <span class="onchain-text" data-latest-block data-rpc-url="https://polygon.drpc.org" title="Latest block"><span class="block-ticker"><span data-block-number><%= articleChain.latest_block_height %></span></span></span>
+          <span class="live-indicator" title="Live Polygon block height" aria-hidden="true"></span>
+        </span>
+      </span>
+    </div>
+    <div class="article-onchain-row">
+      <span class="article-onchain-label">Transaction Hash</span>
+      <span class="onchain-value-wrap is-expandable">
+        <span class="onchain-text"><%= articleChain.transaction_hash %></span>
+        <button class="onchain-expand" type="button" data-onchain-expand data-label="Transaction Hash" aria-expanded="false" aria-label="Show full Transaction Hash" title="Show full Transaction Hash"></button>
+      </span>
+    </div>
+    <div class="article-onchain-row">
+      <span class="article-onchain-label">Contract Address</span>
+      <span class="onchain-value-wrap is-expandable">
+        <a class="onchain-link" href="https://polygonscan.com/address/<%= articleChain.contract_address %>" target="_blank" rel="noreferrer"><%= articleChain.contract_address %></a>
+        <button class="onchain-expand" type="button" data-onchain-expand data-label="Contract Address" aria-expanded="false" aria-label="Show full Contract Address" title="Show full Contract Address"></button>
+      </span>
+    </div>
+  </div>
+<% } %>

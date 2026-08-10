@@ -58,6 +58,7 @@ jobs:
             exit 0
           fi
           pnpm onchain:publish
+          pnpm onchain:publish:articles
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
       - name: Rebuild with on-chain metadata

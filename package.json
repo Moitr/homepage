@@ -10,7 +10,9 @@
     "server": "hexo server",
     "test": "node --test test/*.test.js",
     "onchain:check": "node tools/publish-homepage-polygon.js --check",
-    "onchain:publish": "node tools/publish-homepage-polygon.js"
+    "onchain:publish": "node tools/publish-homepage-polygon.js",
+    "onchain:check:articles": "node tools/publish-articles-polygon.js --check",
+    "onchain:publish:articles": "node tools/publish-articles-polygon.js"
   },
   "hexo": {
     "version": "8.1.2"
@@ -30,6 +32,9 @@
   "devDependencies": {
     "ethers": "6.17.0",
     "hexo-cli": "^4.3.2",
+    "hexo-front-matter": "4.2.1",
+    "js-yaml": "4.1.0",
+    "marked": "15.0.12",
     "solc": "0.8.36"
   }
 }

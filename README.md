@@ -41,3 +41,29 @@ pnpm onchain:check
 `onchain:check` compiles the contract, validates the generated homepage, verifies
 the Polygon mainnet chain ID and deterministic deployer, and calculates the
 future contract address without signing or sending a transaction.
+
+## Article archive
+
+Posts use positive numeric filenames and matching front-matter slugs. The first
+post is `source/_posts/1.md` with `slug: 1`, so its published path is `/1/`.
+Continue with `2.md`, `3.md`, and so on without renumbering existing posts.
+
+Each post is archived in a separate `ArticleArchive` contract as compact JSON:
+
+```json
+{
+  "title": "Article title",
+  "slug": "1",
+  "date": "2026-08-10T12:00:00Z",
+  "content": "gzip-and-Base64 Markdown",
+  "images": [
+    { "name": "photo.jpg", "hash": "md5" }
+  ]
+}
+```
+
+Local image hashes cover the file bytes. Remote image hashes cover the stable
+image URL so a CDN response change cannot cause an unnecessary transaction. The
+deduplication hash uses normalized, uncompressed Markdown, title, slug, date, and
+image metadata. A rebuild sends no article transaction unless those values
+change. Run `pnpm onchain:check:articles` for a read-only mainnet simulation.

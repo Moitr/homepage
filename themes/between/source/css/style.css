@@ -796,6 +796,36 @@ html.is-leaving .site-footer {
   text-decoration: none;
 }
 
+.article-onchain {
+  display: grid;
+  gap: 0;
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--text);
+  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.article-onchain-row {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: 16px;
+  min-width: 0;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.article-onchain-row:last-child {
+  border-bottom: 0;
+}
+
+.article-onchain-label {
+  color: var(--muted);
+  font-family: "Inter Variable", "Noto Sans SC Variable", sans-serif;
+}
+
 .article-share {
   display: inline-grid;
   width: 22px;
@@ -1404,6 +1434,12 @@ html.is-leaving .site-footer {
   .article-header h1 {
     font-size: 34px;
     line-height: 1.15;
+  }
+
+  .article-onchain-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 8px 0;
   }
 
   .article-content {
