@@ -397,14 +397,18 @@ html.is-leaving .site-footer {
   gap: 7px;
 }
 
-.onchain-link {
+.onchain-link,
+.onchain-text {
   position: relative;
   min-width: 0;
   overflow: hidden;
   color: inherit;
-  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.onchain-link {
+  text-decoration: none;
   transition: color 150ms ease;
 }
 
@@ -434,7 +438,8 @@ html.is-leaving .site-footer {
   align-items: flex-start;
 }
 
-.onchain-value-wrap.is-expanded .onchain-link {
+.onchain-value-wrap.is-expanded .onchain-link,
+.onchain-value-wrap.is-expanded .onchain-text {
   overflow: visible;
   overflow-wrap: anywhere;
   white-space: normal;

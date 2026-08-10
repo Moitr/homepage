@@ -225,21 +225,19 @@
     });
   });
 
-  var latestBlockLink = document.querySelector('[data-latest-block]');
-  if (latestBlockLink) {
+  var latestBlockValue = document.querySelector('[data-latest-block]');
+  if (latestBlockValue) {
     var latestBlockTimer;
     var latestBlockRequest;
-    var blockNumberElement = latestBlockLink.querySelector('[data-block-number]');
-    var blockTicker = latestBlockLink.querySelector('.block-ticker');
-    var liveWrapper = latestBlockLink.closest('.onchain-value-wrap');
+    var blockNumberElement = latestBlockValue.querySelector('[data-block-number]');
+    var blockTicker = latestBlockValue.querySelector('.block-ticker');
+    var liveWrapper = latestBlockValue.closest('.onchain-value-wrap');
 
     function renderLatestBlock(blockNumber) {
       var nextValue = String(blockNumber);
-      var currentElement = latestBlockLink.querySelector('[data-block-number]');
+      var currentElement = latestBlockValue.querySelector('[data-block-number]');
       var currentValue = currentElement ? currentElement.textContent.trim() : '';
 
-      latestBlockLink.href = 'https://polygonscan.com/block/' + nextValue;
-      latestBlockLink.setAttribute('aria-label', 'Latest Polygon block ' + nextValue);
       if (nextValue === currentValue || !currentElement) return;
 
       if (reducedMotion) {
@@ -281,7 +279,7 @@
         latestBlockRequest.abort();
       }, 5000);
 
-      fetch(latestBlockLink.dataset.rpcUrl, {
+      fetch(latestBlockValue.dataset.rpcUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber', params: [] }),
