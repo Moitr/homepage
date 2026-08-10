@@ -310,7 +310,18 @@
       });
     }
 
-    if (blockNumberElement) refreshLatestBlock();
+    function queueLatestBlockRefresh() {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(refreshLatestBlock, { timeout: 1200 });
+      } else {
+        window.setTimeout(refreshLatestBlock, 0);
+      }
+    }
+
+    if (blockNumberElement) {
+      if (document.readyState === 'complete') queueLatestBlockRefresh();
+      else window.addEventListener('load', queueLatestBlockRefresh, { once: true });
+    }
   }
 
   var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.article-toc a'));

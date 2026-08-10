@@ -41,7 +41,7 @@ body {
   overflow-x: clip;
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter Variable", "Noto Sans SC Variable", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Inter Variable", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0;
@@ -380,7 +380,7 @@ html.is-leaving .site-footer {
   min-width: 0;
   overflow-wrap: anywhere;
   color: var(--text);
-  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 13px;
   font-weight: 480;
   line-height: 1.55;
@@ -830,7 +830,7 @@ html.is-leaving .site-footer {
   padding: 9px 0;
   border-bottom: 1px solid var(--line);
   color: var(--muted);
-  font-family: "Inter Variable", "Noto Sans SC Variable", sans-serif;
+  font-family: "Inter Variable", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 12px;
   font-weight: 560;
 }
@@ -866,7 +866,7 @@ html.is-leaving .site-footer {
 
 .article-onchain-label {
   color: var(--muted);
-  font-family: "Inter Variable", "Noto Sans SC Variable", sans-serif;
+  font-family: "Inter Variable", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 .article-share {
@@ -1323,6 +1323,28 @@ html.is-leaving .site-footer {
   object-fit: cover;
 }
 
+.article-content .mermaid-diagram {
+  margin: 34px 0 40px;
+  padding: 24px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--soft);
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--faint) transparent;
+  scrollbar-width: thin;
+}
+
+.article-content .mermaid-diagram .mermaid {
+  min-width: 600px;
+}
+
+.article-content .mermaid-diagram svg {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+}
+
 .article-content p:has(> img:only-child) {
   margin: 42px -28px 14px;
 }
@@ -1545,6 +1567,12 @@ html.is-leaving .site-footer {
   .article-content .article-gallery {
     gap: 5px;
     margin: 32px 0 24px;
+  }
+
+  .article-content .mermaid-diagram {
+    padding: 18px;
+    margin-right: -16px;
+    margin-left: -16px;
   }
 
   .article-content > table {

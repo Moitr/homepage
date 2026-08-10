@@ -15,6 +15,10 @@ highlight:
   wrap: false
   hljs: true
 
+# Keep article images out of the initial render path until they approach the viewport.
+marked:
+  lazyload: true
+
 # Keep only the main archive index; posts use /archives/:slug/.
 archive_generator:
   yearly: false
