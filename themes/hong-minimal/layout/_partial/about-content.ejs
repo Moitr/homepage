@@ -1,0 +1,29 @@
+<section class="about-hero section-shell">
+  <div class="about-intro">
+    <% const greetings = theme.about.greetings || ['Hello, welcome here']; %>
+    <h1>
+      <span class="wave" aria-hidden="true">&#128075;</span>
+      <span class="greeting-text">
+        <span class="sr-only"><%= greetings[0] %></span>
+        <span aria-hidden="true" data-typing-greeting data-phrases="<%= JSON.stringify(greetings) %>"><%= greetings[0] %></span><span class="cursor" aria-hidden="true">_</span>
+      </span>
+    </h1>
+    <p><%= theme.about.intro %></p>
+    <div class="text-links" aria-label="Profile links">
+      <% (theme.about.links || []).forEach(function (link) { %>
+        <a href="<%- url_for(link.url) %>" <%- link.external ? 'target="_blank" rel="noreferrer"' : '' %>><%= link.label %></a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<section class="about-details section-shell" aria-label="About details">
+  <div class="details-column">
+    <h2>Profile</h2>
+    <dl class="profile-list">
+      <% (theme.about.profile || []).forEach(function (item) { %>
+        <div><dt><%= item.label %></dt><dd><%= item.value %></dd></div>
+      <% }); %>
+    </dl>
+  </div>
+</section>

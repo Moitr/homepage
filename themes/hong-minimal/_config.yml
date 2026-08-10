@@ -1,0 +1,33 @@
+menu:
+  About: /
+  Blogs: /blog/
+
+github_url: https://github.com/moitr
+
+about:
+  greetings:
+    - "Hello！"
+    - "你好！"
+    - "こんにちは、ようこそ!"
+    - "Bonjour, bienvenue!"
+    - "안녕하세요, 환영해요!"
+  intro: >-
+    I'm Ruiyang Dong (@Moitr), A student shaping code and chasing poetry.
+    I build with logic, live with curiosity, and find beauty between the lines.
+    Still learning, still creating, still becoming.
+  links:
+    - label: Blog
+      url: https://moitr.ren/
+      external: true
+    - label: GitHub
+      url: https://github.com/moitr
+      external: true
+    - label: Email
+      url: mailto:i@moitr.ren
+  profile:
+    - label: MBTI
+      value: INFP-A
+    - label: Contact me
+      value: i@moitr.ren
+
+footer: ''

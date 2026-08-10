@@ -1,0 +1,38 @@
+<% const posts = site.posts.sort('date', -1).toArray(); const pinned = posts.filter(function (post) { return post.pinned; }); const regular = posts.filter(function (post) { return !post.pinned; }); const years = {}; regular.forEach(function (post) { const year = post.date.format('YYYY'); (years[year] || (years[year] = [])).push(post); }); function tagsFor(post) { return post.tags ? post.tags.toArray().map(function(tag) { return '#' + tag.name; }).join(' ') : ''; } %>
+<section class="blog-shell">
+  <h1 class="sr-only">Blogs</h1>
+  <label class="search-field">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <span class="sr-only">Search articles</span>
+    <input type="search" placeholder="Search by title or tags" autocomplete="off" data-post-search>
+  </label>
+
+  <% if (pinned.length) { %>
+    <section class="post-group" data-post-group>
+      <h2>Pinned</h2>
+      <div class="post-list">
+        <% pinned.forEach(function (post) { %>
+          <article class="post-row" data-search-value="<%= (post.title + ' ' + tagsFor(post)).toLowerCase() %>">
+            <a href="<%- url_for(post.path) %>"><%= post.title %></a>
+            <p><time datetime="<%= post.date.toISOString() %>"><%= post.date.format('MMM DD') %></time><%= tagsFor(post) ? ', ' + tagsFor(post) : '' %></p>
+          </article>
+        <% }); %>
+      </div>
+    </section>
+  <% } %>
+
+  <% Object.keys(years).sort().reverse().forEach(function (year) { %>
+    <section class="post-group" data-post-group>
+      <h2><%= year %></h2>
+      <div class="post-list">
+        <% years[year].forEach(function (post) { %>
+          <article class="post-row" data-search-value="<%= (post.title + ' ' + tagsFor(post)).toLowerCase() %>">
+            <a href="<%- url_for(post.path) %>"><%= post.title %></a>
+            <p><time datetime="<%= post.date.toISOString() %>"><%= post.date.format('MMM DD') %></time><%= tagsFor(post) ? ', ' + tagsFor(post) : '' %></p>
+          </article>
+        <% }); %>
+      </div>
+    </section>
+  <% }); %>
+  <p class="empty-search" data-empty-search hidden>No matching posts.</p>
+</section>
