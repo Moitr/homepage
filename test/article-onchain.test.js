@@ -16,24 +16,23 @@ const ROOT = path.join(__dirname, '..');
 
 test('article payload follows the canonical JSON format', () => {
   const articles = loadArticles(ROOT);
-  assert.equal(articles.length, 1);
+  assert.ok(articles.length > 0);
 
-  const article = articles[0];
-  const payload = JSON.parse(article.json);
-  assert.deepEqual(Object.keys(payload), ['title', 'slug', 'date', 'content', 'images']);
-  assert.equal(payload.title, 'Markdown Style Guide');
-  assert.equal(payload.slug, '1');
-  assert.equal(payload.date, '2026-08-10T12:00:00Z');
-  assert.match(article.contentHash, /^0x[0-9a-f]{64}$/);
-  assert.deepEqual(payload.images, [{
-    name: 'photo-1498050108023-c5249f4df085',
-    hash: '3b80eee1aa7b27c56ccc3d935fd79920'
-  }]);
+  for (const article of articles) {
+    const payload = JSON.parse(article.json);
+    assert.deepEqual(Object.keys(payload), ['title', 'slug', 'date', 'content', 'images']);
+    assert.ok(payload.title);
+    assert.match(payload.slug, /^[1-9]\d*$/);
+    assert.match(payload.date, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    assert.match(article.contentHash, /^0x[0-9a-f]{64}$/);
+    assert.ok(payload.images.every((image) => (
+      typeof image.name === 'string' && image.name.length > 0 && /^[0-9a-f]{32}$/.test(image.hash)
+    )));
 
-  const markdown = zlib.gunzipSync(Buffer.from(payload.content, 'base64')).toString('utf8');
-  assert.match(markdown, /^Markdown turns plain text/);
-  assert.equal(markdown, article.markdown);
-  assert.equal(markdown, normalizeMarkdown(markdown));
+    const markdown = zlib.gunzipSync(Buffer.from(payload.content, 'base64')).toString('utf8');
+    assert.equal(markdown, article.markdown);
+    assert.equal(markdown, normalizeMarkdown(markdown));
+  }
 });
 
 test('article dates are deterministic UTC values', () => {

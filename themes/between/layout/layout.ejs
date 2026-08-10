@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="<%= page.description || page.excerpt || config.description %>">
+    <link rel="canonical" href="<%= page.original_url || full_url_for(page.path) %>">
     <title><%= page.title ? page.title + ' | ' : '' %><%= config.title %></title>
     <script>
       (function () {

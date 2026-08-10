@@ -164,10 +164,13 @@
   document.querySelectorAll('.article-content > pre > code').forEach(function (code) {
     var block = code.parentElement;
     var copyButton = document.createElement('button');
+    var copyIcon = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    var copiedIcon = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
     copyButton.className = 'code-copy';
     copyButton.type = 'button';
-    copyButton.textContent = 'Copy';
+    copyButton.innerHTML = copyIcon;
     copyButton.setAttribute('aria-label', 'Copy code');
+    copyButton.setAttribute('title', 'Copy code');
 
     copyButton.addEventListener('click', function () {
       var copyAction;
@@ -188,8 +191,16 @@
       }
 
       Promise.resolve(copyAction).then(function () {
-        copyButton.textContent = 'Copied';
-        window.setTimeout(function () { copyButton.textContent = 'Copy'; }, 1200);
+        copyButton.innerHTML = copiedIcon;
+        copyButton.classList.add('is-copied');
+        copyButton.setAttribute('aria-label', 'Code copied');
+        copyButton.setAttribute('title', 'Code copied');
+        window.setTimeout(function () {
+          copyButton.innerHTML = copyIcon;
+          copyButton.classList.remove('is-copied');
+          copyButton.setAttribute('aria-label', 'Copy code');
+          copyButton.setAttribute('title', 'Copy code');
+        }, 1200);
       }).catch(function () {});
     });
 
