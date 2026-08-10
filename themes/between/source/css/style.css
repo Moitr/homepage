@@ -899,11 +899,28 @@ html.is-leaving .site-footer {
 
 .article-origin {
   margin: 0 0 44px;
-  padding-left: 14px;
-  border-left: 2px solid color-mix(in srgb, var(--accent), transparent 30%);
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.75;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.article-origin-label {
+  color: var(--accent);
+  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.article-origin-copy {
+  min-width: 0;
 }
 
 .article-origin a {
@@ -913,8 +930,8 @@ html.is-leaving .site-footer {
   color: var(--accent);
   font-weight: 650;
   text-decoration: none;
-  text-underline-offset: 4px;
-  transition: opacity 150ms ease, text-decoration-color 150ms ease;
+  white-space: nowrap;
+  transition: color 150ms ease;
 }
 
 .article-origin-arrow {
@@ -923,7 +940,7 @@ html.is-leaving .site-footer {
 
 .article-origin a:hover,
 .article-origin a:focus-visible {
-  text-decoration: underline;
+  color: color-mix(in srgb, var(--accent), var(--text) 24%);
 }
 
 .article-origin a:hover .article-origin-arrow,
@@ -1562,6 +1579,22 @@ html.is-leaving .site-footer {
     grid-template-columns: 1fr;
     gap: 2px;
     padding: 8px 0;
+  }
+
+  .article-origin {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 3px 12px;
+  }
+
+  .article-origin-label {
+    grid-row: 1 / span 2;
+    align-self: start;
+    padding-top: 2px;
+  }
+
+  .article-origin a {
+    grid-column: 2;
+    justify-self: start;
   }
 
   .article-content {
