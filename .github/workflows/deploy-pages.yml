@@ -36,7 +36,32 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Test on-chain publisher
+        run: pnpm test
+
       - name: Build site
+        run: |
+          pnpm clean
+          pnpm build
+
+      - name: Publish homepage to Polygon Amoy
+        id: polygon
+        shell: bash
+        env:
+          POLYGON_PRIVATE_KEY: ${{ secrets.POLYGON_PRIVATE_KEY }}
+          POLYGON_RPC_URL: ${{ vars.POLYGON_AMOY_RPC_URL }}
+        run: |
+          if [ -z "$POLYGON_PRIVATE_KEY" ]; then
+            echo "::notice::Polygon publication skipped because POLYGON_PRIVATE_KEY is not configured."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "uploaded=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          pnpm onchain:publish
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Rebuild with on-chain metadata
+        if: steps.polygon.outputs.configured == 'true'
         run: |
           pnpm clean
           pnpm build

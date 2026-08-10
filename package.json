@@ -7,7 +7,10 @@
     "build": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server"
+    "server": "hexo server",
+    "test": "node --test test/*.test.js",
+    "onchain:check": "node tools/publish-homepage-amoy.js --check",
+    "onchain:publish": "node tools/publish-homepage-amoy.js"
   },
   "hexo": {
     "version": "8.1.2"
@@ -25,6 +28,8 @@
     "hexo-theme-landscape": "^1.0.0"
   },
   "devDependencies": {
-    "hexo-cli": "^4.3.2"
+    "ethers": "6.17.0",
+    "hexo-cli": "^4.3.2",
+    "solc": "0.8.36"
   }
 }
