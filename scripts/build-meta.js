@@ -1,45 +1,28 @@
 'use strict';
 
-const crypto = require('node:crypto');
-const fs = require('node:fs');
-const path = require('node:path');
+const { execFileSync } = require('node:child_process');
 
 const root = hexo.base_dir;
-const inputs = [
-  '_config.yml',
-  'package.json',
-  'pnpm-lock.yaml',
-  'scripts',
-  'source',
-  path.join('themes', 'hong-minimal')
-];
 
-function collectFiles(target) {
-  if (!fs.existsSync(target)) return [];
-
-  const stat = fs.statSync(target);
-  if (stat.isFile()) return [target];
-  if (!stat.isDirectory()) return [];
-
-  return fs.readdirSync(target, { withFileTypes: true })
-    .sort((left, right) => left.name.localeCompare(right.name))
-    .flatMap((entry) => collectFiles(path.join(target, entry.name)));
+function normalizeCommitHash(value) {
+  const hash = String(value || '').trim();
+  return /^[0-9a-f]{7,40}$/i.test(hash) ? hash.slice(0, 8).toLowerCase() : '';
 }
 
-function createBuildHash() {
-  const hash = crypto.createHash('sha256');
-  const files = inputs
-    .flatMap((input) => collectFiles(path.join(root, input)))
-    .sort((left, right) => left.localeCompare(right));
+function getCommitHash() {
+  const githubHash = normalizeCommitHash(process.env.GITHUB_SHA);
+  if (githubHash) return githubHash;
 
-  files.forEach((file) => {
-    hash.update(path.relative(root, file).replace(/\\/g, '/'));
-    hash.update('\0');
-    hash.update(fs.readFileSync(file));
-    hash.update('\0');
-  });
-
-  return hash.digest('hex').slice(0, 8);
+  try {
+    const localHash = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore']
+    });
+    return normalizeCommitHash(localHash) || 'unknown';
+  } catch (error) {
+    return 'unknown';
+  }
 }
 
 function formatBuildTime(date) {
@@ -64,7 +47,7 @@ function formatBuildTime(date) {
 
 const buildStartedAt = new Date();
 const buildMeta = Object.freeze({
-  hash: createBuildHash(),
+  hash: getCommitHash(),
   datetime: buildStartedAt.toISOString(),
   time: formatBuildTime(buildStartedAt)
 });
