@@ -20,6 +20,8 @@ test('README article list matches the current posts', () => {
   assert.match(list, /https:\/\/moitr\.cc\/archives\/1\//);
   assert.match(list, /https:\/\/moitr\.cc\/archives\/2\//);
   assert.match(list, /https:\/\/moitr\.cc\/archives\/3\//);
+  assert.match(list, /\[Original\]\(https:\/\/moitr\.ren\/posts\/categories\/new-beginning\)/);
+  assert.match(list, /\[Original\]\(https:\/\/moitr\.ren\/posts\/categories\/build-permanent-blockchain-blog-polygon-hexo-github-actions\)/);
 });
 
 test('README generator changes only the marked article section', () => {

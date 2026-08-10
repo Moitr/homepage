@@ -105,6 +105,7 @@ function articlePayload(root, postPath) {
   }
   return {
     ...payload,
+    originalUrl: String(parsed.original_url || '').trim(),
     markdown,
     json,
     bytes,

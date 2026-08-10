@@ -31,12 +31,13 @@ function renderArticleList(root) {
   ));
   const rows = articles.map((article) => {
     const articleUrl = new URL(`archives/${article.slug}/`, baseUrl).toString();
-    return `| ${article.slug} | [${markdownText(article.title)}](${articleUrl}) | ${article.date.slice(0, 10)} |`;
+    const original = article.originalUrl ? `[Original](${article.originalUrl})` : '—';
+    return `| ${article.slug} | [${markdownText(article.title)}](${articleUrl}) | ${original} | ${article.date.slice(0, 10)} |`;
   });
 
   return [
-    '| # | Article | Published |',
-    '| ---: | --- | --- |',
+    '| # | Article | Original | Published |',
+    '| ---: | --- | --- | --- |',
     ...rows
   ].join('\n');
 }
