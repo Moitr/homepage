@@ -7,10 +7,10 @@ const mermaidDist = path.dirname(require.resolve('mermaid'));
 const mermaidEntry = path.join(mermaidDist, 'mermaid.esm.min.mjs');
 const mermaidChunks = path.join(mermaidDist, 'chunks', 'mermaid.esm.min');
 
-function asset(source, destination) {
+function javascriptAsset(source, destination) {
   return {
     path: destination,
-    data: () => fs.createReadStream(source)
+    data: () => fs.readFileSync(source, 'utf8').replaceAll('.mjs', '.js')
   };
 }
 
@@ -20,12 +20,12 @@ hexo.extend.generator.register('mermaid-assets', (locals) => {
   ));
   if (!hasMermaid) return [];
 
-  const routes = [asset(mermaidEntry, 'js/vendor/mermaid/mermaid.esm.min.mjs')];
+  const routes = [javascriptAsset(mermaidEntry, 'js/vendor/mermaid/mermaid.esm.min.js')];
   for (const file of fs.readdirSync(mermaidChunks)) {
     if (!file.endsWith('.mjs')) continue;
-    routes.push(asset(
+    routes.push(javascriptAsset(
       path.join(mermaidChunks, file),
-      `js/vendor/mermaid/chunks/mermaid.esm.min/${file}`
+      `js/vendor/mermaid/chunks/mermaid.esm.min/${file.replace(/\.mjs$/, '.js')}`
     ));
   }
   return routes;

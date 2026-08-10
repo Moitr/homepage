@@ -1,4 +1,4 @@
-import mermaid from './vendor/mermaid/mermaid.esm.min.mjs';
+import mermaid from './vendor/mermaid/mermaid.esm.min.js';
 
 const root = document.documentElement;
 const codeBlocks = Array.from(document.querySelectorAll('.article-content pre > code.mermaid'));
