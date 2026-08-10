@@ -794,41 +794,82 @@ html.is-leaving .site-footer {
   border-radius: 4px;
   background: var(--soft);
   color: var(--text);
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
   font-size: 0.86em;
-  font-weight: 520;
+  font-weight: 480;
 }
 
 .article-content > pre {
   position: relative;
-  margin: 30px 0;
+  margin: 28px 0 32px;
   overflow: hidden;
-  border: 0;
+  border: 1px solid #dce0e8;
   border-radius: 6px;
   background: #eff1f5;
   box-shadow: none;
 }
 
 .dark .article-content > pre {
+  border-color: #363a4f;
   background: #24273a;
-  box-shadow: none;
 }
 
 .article-content > pre::before {
   position: absolute;
-  top: 10px;
-  left: 18px;
-  color: #8c8fa1;
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 650;
-  line-height: 1;
-  text-transform: uppercase;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 34px;
+  padding: 0 16px;
+  border-bottom: 1px solid #dce0e8;
+  background: #e6e9ef;
+  color: #6c6f85;
+  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 550;
+  line-height: 33px;
   content: "Code";
 }
 
 .dark .article-content > pre::before {
-  color: #939ab7;
+  border-color: #363a4f;
+  background: #1e2030;
+  color: #a5adcb;
+}
+
+.article-content > pre > .code-copy {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 4px;
+  height: 33px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: #8c8fa1;
+  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
+  font-size: 10.5px;
+  font-weight: 520;
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.article-content > pre > .code-copy:hover,
+.article-content > pre > .code-copy:focus-visible {
+  background: rgba(76, 79, 105, 0.06);
+  color: #4c4f69;
+  outline: 0;
+}
+
+.dark .article-content > pre > .code-copy {
+  color: #8087a2;
+}
+
+.dark .article-content > pre > .code-copy:hover,
+.dark .article-content > pre > .code-copy:focus-visible {
+  background: rgba(202, 211, 245, 0.06);
+  color: #cad3f5;
 }
 
 .article-content > pre:has(> code.javascript)::before {
@@ -872,25 +913,28 @@ html.is-leaving .site-footer {
 .article-content > pre > code {
   display: block;
   overflow-x: auto;
-  padding: 34px 18px 18px;
+  padding: 48px 18px 18px;
   border: 0;
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font-size: 13.5px;
-  font-weight: 450;
-  line-height: 1.75;
+  font-weight: 430;
+  line-height: 1.7;
+  tab-size: 2;
 }
 
 .article-content figure.highlight {
-  margin: 30px 0;
+  margin: 28px 0 32px;
   overflow: auto;
-  border: 0;
+  border: 1px solid #dce0e8;
   border-radius: 6px;
   background: #eff1f5;
   box-shadow: none;
 }
 
 .dark .article-content figure.highlight {
+  border-color: #363a4f;
   background: #24273a;
 }
 
@@ -924,12 +968,23 @@ html.is-leaving .site-footer {
 }
 
 @media (max-width: 799px) {
+  .article-content > pre::before {
+    padding: 0 14px;
+  }
+
   .article-content > pre > code {
+    padding: 47px 14px 16px;
+    font-size: 13px;
     scrollbar-width: none;
   }
 
   .article-content > pre > code::-webkit-scrollbar {
     height: 0;
+  }
+
+  .article-content > pre > .code-copy {
+    right: 2px;
+    padding: 0 12px;
   }
 }
 
@@ -955,8 +1010,9 @@ html.is-leaving .site-footer {
   background: transparent;
   box-shadow: none;
   color: inherit;
+  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
   font-size: 13.5px;
-  line-height: 1.75;
+  line-height: 1.7;
 }
 
 .article-content img {

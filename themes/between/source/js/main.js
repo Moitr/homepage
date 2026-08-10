@@ -161,6 +161,41 @@
     });
   }
 
+  document.querySelectorAll('.article-content > pre > code').forEach(function (code) {
+    var block = code.parentElement;
+    var copyButton = document.createElement('button');
+    copyButton.className = 'code-copy';
+    copyButton.type = 'button';
+    copyButton.textContent = 'Copy';
+    copyButton.setAttribute('aria-label', 'Copy code');
+
+    copyButton.addEventListener('click', function () {
+      var copyAction;
+
+      if (navigator.clipboard) {
+        copyAction = navigator.clipboard.writeText(code.textContent);
+      } else {
+        var textarea = document.createElement('textarea');
+        textarea.value = code.textContent;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        copyAction = document.execCommand('copy')
+          ? Promise.resolve()
+          : Promise.reject(new Error('Copy failed'));
+        textarea.remove();
+      }
+
+      Promise.resolve(copyAction).then(function () {
+        copyButton.textContent = 'Copied';
+        window.setTimeout(function () { copyButton.textContent = 'Copy'; }, 1200);
+      }).catch(function () {});
+    });
+
+    block.appendChild(copyButton);
+  });
+
   document.querySelectorAll('[data-share]').forEach(function (button) {
     button.addEventListener('click', function () {
       var shareData = { title: document.title, url: window.location.href };
