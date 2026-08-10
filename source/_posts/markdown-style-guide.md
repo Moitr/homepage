@@ -71,7 +71,7 @@ A task list makes progress visible:
 
 ## Code
 
-Fenced code blocks include syntax highlighting and line numbers.
+Fenced code blocks include syntax highlighting and horizontal scrolling for long lines.
 
 ```javascript
 const articles = [

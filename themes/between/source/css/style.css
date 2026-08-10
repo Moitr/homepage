@@ -799,32 +799,99 @@ html.is-leaving .site-footer {
   font-weight: 520;
 }
 
-.article-content > pre,
-.article-content figure.highlight {
-  margin: 30px 0;
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  background: color-mix(in srgb, var(--soft), var(--bg) 48%);
-  box-shadow: none;
-}
-
-.dark .article-content > pre,
-.dark .article-content figure.highlight {
-  background: #0d1117;
-  box-shadow: none;
-}
-
 .article-content > pre {
-  padding: 18px 20px;
-  line-height: 1.75;
+  position: relative;
+  margin: 30px 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 6px;
+  background: #eff1f5;
+  box-shadow: none;
 }
 
-.article-content pre code {
-  padding: 0;
+.dark .article-content > pre {
+  background: #24273a;
+  box-shadow: none;
+}
+
+.article-content > pre::before {
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  color: #8c8fa1;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  text-transform: uppercase;
+  content: "Code";
+}
+
+.dark .article-content > pre::before {
+  color: #939ab7;
+}
+
+.article-content > pre:has(> code.javascript)::before {
+  content: "JavaScript";
+}
+
+.article-content > pre:has(> code.typescript)::before {
+  content: "TypeScript";
+}
+
+.article-content > pre:has(> code.css)::before {
+  content: "CSS";
+}
+
+.article-content > pre:has(> code.html)::before,
+.article-content > pre:has(> code.xml)::before {
+  content: "HTML";
+}
+
+.article-content > pre:has(> code.json)::before {
+  content: "JSON";
+}
+
+.article-content > pre:has(> code.bash)::before,
+.article-content > pre:has(> code.shell)::before {
+  content: "Shell";
+}
+
+.article-content > pre:has(> code.python)::before {
+  content: "Python";
+}
+
+.article-content > pre:has(> code.markdown)::before {
+  content: "Markdown";
+}
+
+.article-content > pre:has(> code.yaml)::before {
+  content: "YAML";
+}
+
+.article-content > pre > code {
+  display: block;
+  overflow-x: auto;
+  padding: 34px 18px 18px;
   border: 0;
   background: transparent;
   color: inherit;
+  font-size: 13.5px;
+  font-weight: 450;
+  line-height: 1.75;
+}
+
+.article-content figure.highlight {
+  margin: 30px 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 6px;
+  background: #eff1f5;
+  box-shadow: none;
+}
+
+.dark .article-content figure.highlight {
+  background: #24273a;
 }
 
 .article-content figure.highlight table {
@@ -835,25 +902,35 @@ html.is-leaving .site-footer {
   border: 0;
 }
 
-.article-content > pre,
+.article-content > pre > code,
 .article-content figure.highlight table,
 .article-content > table {
   scrollbar-color: var(--faint) transparent;
   scrollbar-width: thin;
 }
 
-.article-content > pre::-webkit-scrollbar,
+.article-content > pre > code::-webkit-scrollbar,
 .article-content figure.highlight table::-webkit-scrollbar,
 .article-content > table::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-.article-content > pre::-webkit-scrollbar-thumb,
+.article-content > pre > code::-webkit-scrollbar-thumb,
 .article-content figure.highlight table::-webkit-scrollbar-thumb,
 .article-content > table::-webkit-scrollbar-thumb {
   border-radius: 3px;
   background: var(--faint);
+}
+
+@media (max-width: 799px) {
+  .article-content > pre > code {
+    scrollbar-width: none;
+  }
+
+  .article-content > pre > code::-webkit-scrollbar {
+    height: 0;
+  }
 }
 
 .article-content figure.highlight td {
