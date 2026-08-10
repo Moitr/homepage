@@ -36,8 +36,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Update README article list
+        run: pnpm readme:update
+
       - name: Test on-chain publisher
         run: pnpm test
+
+      - name: Commit README article list
+        shell: bash
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "README.md article list is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: refresh article list"
+          git push origin HEAD:main
 
       - name: Build site
         run: |
