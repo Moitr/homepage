@@ -44,12 +44,12 @@ jobs:
           pnpm clean
           pnpm build
 
-      - name: Publish homepage to Polygon Amoy
+      - name: Publish homepage to Polygon mainnet
         id: polygon
         shell: bash
         env:
           POLYGON_PRIVATE_KEY: ${{ secrets.POLYGON_PRIVATE_KEY }}
-          POLYGON_RPC_URL: ${{ vars.POLYGON_AMOY_RPC_URL }}
+          POLYGON_RPC_URL: ${{ vars.POLYGON_RPC_URL }}
         run: |
           if [ -z "$POLYGON_PRIVATE_KEY" ]; then
             echo "::notice::Polygon publication skipped because POLYGON_PRIVATE_KEY is not configured."

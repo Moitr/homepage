@@ -12,9 +12,9 @@ const {
   toUtf8Bytes
 } = require('ethers');
 const {
-  AMOY_CHAIN_ID,
-  AMOY_EXPLORER_URL,
-  AMOY_RPC_URL,
+  POLYGON_CHAIN_ID,
+  POLYGON_EXPLORER_URL,
+  POLYGON_RPC_URL,
   DEPLOYMENT_SALT,
   DETERMINISTIC_DEPLOYER,
   MAX_HTML_BYTES,
@@ -31,7 +31,7 @@ const CHECK_ADDRESS = '0x000000000000000000000000000000000000dEaD';
 function requiredPrivateKey() {
   const value = String(process.env.POLYGON_PRIVATE_KEY || '').trim();
   if (!value) {
-    throw new Error('POLYGON_PRIVATE_KEY is required. Use a dedicated Amoy testnet wallet.');
+    throw new Error('POLYGON_PRIVATE_KEY is required. Use a dedicated Polygon publishing wallet.');
   }
   return value.startsWith('0x') ? value : `0x${value}`;
 }
@@ -47,11 +47,11 @@ async function assertAffordable(provider, wallet, transaction) {
     provider.getFeeData()
   ]);
   const gasPrice = fees.maxFeePerGas || fees.gasPrice;
-  if (!gasPrice) throw new Error('The Amoy RPC did not return a gas price.');
+  if (!gasPrice) throw new Error('The Polygon RPC did not return a gas price.');
   const estimatedCost = bufferedGas(gas) * gasPrice;
   if (balance < estimatedCost) {
     throw new Error(
-      `Insufficient Amoy POL in ${wallet.address}. ` +
+      `Insufficient Polygon POL in ${wallet.address}. ` +
       `Balance: ${formatEther(balance)} POL; estimated requirement: ${formatEther(estimatedCost)} POL.`
     );
   }
@@ -97,16 +97,16 @@ async function main() {
     throw new Error(`Homepage is ${htmlBytes.length} bytes; contract maximum is ${MAX_HTML_BYTES} bytes.`);
   }
 
-  const rpcUrl = String(process.env.POLYGON_RPC_URL || '').trim() || AMOY_RPC_URL;
+  const rpcUrl = String(process.env.POLYGON_RPC_URL || '').trim() || POLYGON_RPC_URL;
   const provider = new JsonRpcProvider(rpcUrl);
   const network = await provider.getNetwork();
-  if (network.chainId !== AMOY_CHAIN_ID) {
-    throw new Error(`Expected Polygon Amoy chain ID ${AMOY_CHAIN_ID}, received ${network.chainId}.`);
+  if (network.chainId !== POLYGON_CHAIN_ID) {
+    throw new Error(`Expected Polygon mainnet chain ID ${POLYGON_CHAIN_ID}, received ${network.chainId}.`);
   }
 
   const deployerCode = await provider.getCode(DETERMINISTIC_DEPLOYER);
   if (deployerCode === '0x') {
-    throw new Error(`Deterministic deployer ${DETERMINISTIC_DEPLOYER} is not available on Amoy.`);
+    throw new Error(`Deterministic deployer ${DETERMINISTIC_DEPLOYER} is not available on Polygon mainnet.`);
   }
 
   const compiled = compileHomepageArchive();
@@ -168,7 +168,7 @@ async function main() {
   let uploaded = false;
 
   if (previousHash === contentHash) {
-    console.log(`Homepage content is unchanged (${contentHash}); no Amoy transaction sent.`);
+    console.log(`Homepage content is unchanged (${contentHash}); no Polygon transaction sent.`);
   } else {
     const transaction = await contract.publish.populateTransaction(htmlBytes, contentHash);
     const gasLimit = await assertAffordable(provider, wallet, transaction);
@@ -189,8 +189,8 @@ async function main() {
     : await latestPublicationTransaction(contract, blockHeight);
 
   const metadata = {
-    network: 'Polygon Amoy',
-    chainId: AMOY_CHAIN_ID.toString(),
+    network: 'Polygon PoS',
+    chainId: POLYGON_CHAIN_ID.toString(),
     walletAddress: wallet.address,
     blockHeight: String(blockHeight),
     latestBlockHeight: String(latestBlockHeight),
@@ -198,7 +198,7 @@ async function main() {
     contractAddress: deployment.address,
     contentHash,
     uploaded,
-    explorer: `${AMOY_EXPLORER_URL}/address/${deployment.address}`
+    explorer: `${POLYGON_EXPLORER_URL}/address/${deployment.address}`
   };
   appendEnvironment(metadata);
   console.log(JSON.stringify(metadata, null, 2));

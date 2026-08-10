@@ -12,11 +12,11 @@ const {
   toUtf8Bytes
 } = require('ethers');
 
-const AMOY_CHAIN_ID = 80002n;
-const AMOY_RPC_URL = 'https://polygon-amoy.drpc.org';
-const AMOY_EXPLORER_URL = 'https://amoy.polygonscan.com';
+const POLYGON_CHAIN_ID = 137n;
+const POLYGON_RPC_URL = 'https://polygon.drpc.org';
+const POLYGON_EXPLORER_URL = 'https://polygonscan.com';
 const DETERMINISTIC_DEPLOYER = getAddress('0x4e59b44847b379578588920cA78FbF26c0B4956C');
-const DEPLOYMENT_SALT = keccak256(toUtf8Bytes('moitr.homepage.archive.amoy.v1'));
+const DEPLOYMENT_SALT = keccak256(toUtf8Bytes('moitr.homepage.archive.polygon.v1'));
 const MAX_HTML_BYTES = 24_576;
 const CONTRACT_PATH = path.join(__dirname, '..', '..', 'contracts', 'HomepageArchive.sol');
 
@@ -95,9 +95,9 @@ function deterministicContract(owner, bytecode) {
 }
 
 module.exports = {
-  AMOY_CHAIN_ID,
-  AMOY_EXPLORER_URL,
-  AMOY_RPC_URL,
+  POLYGON_CHAIN_ID,
+  POLYGON_EXPLORER_URL,
+  POLYGON_RPC_URL,
   DEPLOYMENT_SALT,
   DETERMINISTIC_DEPLOYER,
   MAX_HTML_BYTES,
