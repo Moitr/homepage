@@ -13,8 +13,8 @@ timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://moitr.github.io/home-hexo
-root: /home-hexo/
+url: https://moitr.github.io/homepage
+root: /homepage/
 permalink: blog/:year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
