@@ -78,7 +78,7 @@ function articleImages(root, postPath, markdown) {
 }
 
 function articlePayload(root, postPath) {
-  const raw = fs.readFileSync(postPath, 'utf8');
+  const raw = fs.readFileSync(postPath, 'utf8').replace(/\r\n/g, '\n');
   const parsed = frontMatter.parse(raw, { schema: yaml.FAILSAFE_SCHEMA });
   const slug = String(parsed.slug || path.basename(postPath, path.extname(postPath))).trim();
   if (!/^[1-9]\d*$/.test(slug)) {

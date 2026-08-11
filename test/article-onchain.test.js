@@ -1,12 +1,15 @@
 'use strict';
 
 const path = require('node:path');
+const fs = require('node:fs');
+const os = require('node:os');
 const zlib = require('node:zlib');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   compileArticleArchive,
   deterministicArticleContract,
+  articlePayload,
   loadArticles,
   normalizeDate,
   normalizeMarkdown
@@ -38,6 +41,28 @@ test('article payload follows the canonical JSON format', () => {
 test('article dates are deterministic UTC values', () => {
   assert.equal(normalizeDate('2026-08-10 12:00:00'), '2026-08-10T12:00:00Z');
   assert.equal(normalizeDate('2026-08-10T12:00:00+08:00'), '2026-08-10T04:00:00Z');
+});
+
+test('article front matter accepts CRLF checkouts', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'homepage-article-crlf-'));
+  const postsDirectory = path.join(root, 'source', '_posts');
+  const postPath = path.join(postsDirectory, '1.md');
+
+  try {
+    fs.mkdirSync(postsDirectory, { recursive: true });
+    fs.writeFileSync(
+      postPath,
+      "---\r\ntitle: CRLF article\r\nslug: 1\r\ndate: '2026-08-11T12:00:00Z'\r\n---\r\n\r\nBody.\r\n",
+      'utf8'
+    );
+
+    const article = articlePayload(root, postPath);
+    assert.equal(article.title, 'CRLF article');
+    assert.equal(article.date, '2026-08-11T12:00:00Z');
+    assert.equal(article.markdown, 'Body.\n');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('article contract compiles with a stable deterministic address', () => {

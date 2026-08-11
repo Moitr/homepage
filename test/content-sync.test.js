@@ -11,6 +11,7 @@ const {
   getPostPath,
   originalContentUrl,
   renderPost,
+  runContentSync,
   synchronize,
   updateMapping
 } = require('../tools/sync-content');
@@ -145,10 +146,73 @@ test('an unavailable API leaves posts and permanent mappings untouched', async (
         attempts: 1,
         timeoutMs: 1000
       }),
-      /Content synchronization failed/
+      (error) => {
+        assert.match(error.message, /Content synchronization failed/);
+        assert.equal(error.transient, true);
+        return true;
+      }
     );
     assert.equal(fs.readFileSync(path.join(postsDirectory, '1.md'), 'utf8'), originalPost);
     assert.equal(fs.readFileSync(mappingPath, 'utf8'), originalMapping);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('CI can keep existing content after a transient API outage', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'homepage-content-fallback-'));
+  const postsDirectory = path.join(root, 'source', '_posts');
+  const mappingPath = path.join(root, '.content-sync-map.json');
+  const warnings = [];
+
+  try {
+    fs.mkdirSync(postsDirectory, { recursive: true });
+    fs.writeFileSync(path.join(postsDirectory, '1.md'), 'existing\n', 'utf8');
+    fs.writeFileSync(mappingPath, JSON.stringify({
+      version: 1,
+      next_slug: 2,
+      items: {
+        'post:100': { slug: 1, active: true, source_type: 'post', source_id: '100' }
+      }
+    }) + '\n', 'utf8');
+
+    const result = await runContentSync({
+      root,
+      apiBaseUrl: 'https://unavailable.example/api/v3',
+      fetchImpl: async () => { throw new TypeError('fetch failed', { cause: { code: 'ENETUNREACH' } }); },
+      attempts: 1,
+      timeoutMs: 1000,
+      allowUnavailable: true,
+      logger: { log() {}, warn(message) { warnings.push(message); } }
+    });
+
+    assert.equal(result.skipped, true);
+    assert.equal(fs.readFileSync(path.join(postsDirectory, '1.md'), 'utf8'), 'existing\n');
+    assert.match(warnings.join('\n'), /Existing generated posts and slug mappings were retained/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('CI fallback does not hide permanent HTTP errors', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'homepage-content-permanent-'));
+  try {
+    fs.mkdirSync(path.join(root, 'source', '_posts'), { recursive: true });
+    fs.writeFileSync(path.join(root, '.content-sync-map.json'), JSON.stringify({
+      version: 1,
+      next_slug: 1,
+      items: {}
+    }) + '\n', 'utf8');
+
+    await assert.rejects(runContentSync({
+      root,
+      apiBaseUrl: 'https://invalid.example/api/v3',
+      fetchImpl: async () => ({ ok: false, status: 404, json: async () => ({}) }),
+      attempts: 5,
+      timeoutMs: 1000,
+      allowUnavailable: true,
+      logger: { log() {}, warn() {} }
+    }), /HTTP 404/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

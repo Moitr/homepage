@@ -19,6 +19,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --dns-result-order=ipv4first
 
     steps:
       - name: Check out source
@@ -40,7 +42,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Synchronize articles and notes
-        run: pnpm content:sync
+        run: pnpm content:sync:ci
 
       - name: Synchronize friend links
         run: pnpm links:sync

@@ -9,45 +9,101 @@ const ROOT = path.join(__dirname, '..');
 const DEFAULT_API_BASE_URL = 'https://mx-server.moitr.ren/api/v3';
 const ORIGINAL_SITE_URL = 'https://moitr.ren';
 const MAPPING_FILENAME = '.content-sync-map.json';
-const REQUEST_TIMEOUT_MS = 15_000;
-const REQUEST_ATTEMPTS = 3;
+const REQUEST_TIMEOUT_MS = 20_000;
+const REQUEST_ATTEMPTS = 5;
 const DETAIL_CONCURRENCY = 4;
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-function apiError(message, cause) {
-  const suffix = cause && cause.message ? `: ${cause.message}` : '';
-  return new Error(`Content synchronization failed: ${message}${suffix}`);
+function errorDetails(error) {
+  const details = [];
+  let current = error;
+  for (let depth = 0; current && depth < 4; depth += 1) {
+    const code = current.code ? ` ${current.code}` : '';
+    const message = current.message || String(current);
+    details.push(`${current.name || 'Error'}${code}: ${message}`);
+    current = current.cause;
+  }
+  return details.join(' -> ');
+}
+
+function apiError(message, cause, transient = false) {
+  const suffix = cause ? `: ${errorDetails(cause)}` : '';
+  const error = new Error(`Content synchronization failed: ${message}${suffix}`, { cause });
+  error.name = 'ContentSyncError';
+  error.transient = Boolean(transient);
+  return error;
+}
+
+function transientHttpStatus(status) {
+  return status === 408 || status === 425 || status === 429 || status >= 500;
+}
+
+function transientRequestError(error) {
+  if (typeof error.transient === 'boolean') return error.transient;
+  if (error.name === 'AbortError' || error instanceof TypeError) return true;
+  const code = error.code || error.cause && error.cause.code;
+  return [
+    'EAI_AGAIN',
+    'ECONNREFUSED',
+    'ECONNRESET',
+    'ENETUNREACH',
+    'ENOTFOUND',
+    'ETIMEDOUT',
+    'UND_ERR_CONNECT_TIMEOUT',
+    'UND_ERR_SOCKET'
+  ].includes(code);
 }
 
 async function fetchJson(url, options = {}) {
   const fetchImpl = options.fetchImpl || fetch;
   const attempts = options.attempts || REQUEST_ATTEMPTS;
   const timeoutMs = options.timeoutMs || REQUEST_TIMEOUT_MS;
-  const retryDelayMs = options.retryDelayMs === undefined ? 1_000 : options.retryDelayMs;
+  const retryDelayMs = options.retryDelayMs === undefined ? 1_500 : options.retryDelayMs;
+  const logger = options.logger || console;
   let lastError;
+  let lastTransient = false;
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const response = await fetchImpl(url, {
-        headers: { accept: 'application/json' },
+        headers: {
+          accept: 'application/json',
+          'user-agent': 'moitr-homepage-content-sync/1.0'
+        },
         signal: controller.signal
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
+      if (!response.ok) {
+        const error = new Error(`HTTP ${response.status}`);
+        error.transient = transientHttpStatus(response.status);
+        throw error;
+      }
+      try {
+        return await response.json();
+      } catch (error) {
+        error.transient = false;
+        throw error;
+      }
     } catch (error) {
       lastError = error;
-      if (attempt < attempts) await sleep(retryDelayMs * attempt);
+      lastTransient = transientRequestError(error);
+      if (!lastTransient || attempt === attempts) break;
+      const delay = Math.min(retryDelayMs * (2 ** (attempt - 1)), 12_000);
+      logger.warn(
+        `Content sync request ${attempt}/${attempts} failed for ${url}: ` +
+        `${errorDetails(error)}. Retrying in ${delay}ms.`
+      );
+      await sleep(delay);
     } finally {
       clearTimeout(timeout);
     }
   }
 
-  throw apiError(`unable to request ${url}`, lastError);
+  throw apiError(`unable to request ${url}`, lastError, lastTransient);
 }
 
 function responseData(body, label) {
@@ -193,12 +249,11 @@ async function fetchRemoteContent(options = {}) {
     fetchImpl: options.fetchImpl,
     attempts: options.attempts,
     timeoutMs: options.timeoutMs,
-    retryDelayMs: options.retryDelayMs
+    retryDelayMs: options.retryDelayMs,
+    logger: options.logger
   };
-  const [posts, notes] = await Promise.all([
-    fetchListPages('post', apiBaseUrl, requestOptions),
-    fetchListPages('note', apiBaseUrl, requestOptions)
-  ]);
+  const posts = await fetchListPages('post', apiBaseUrl, requestOptions);
+  const notes = await fetchListPages('note', apiBaseUrl, requestOptions);
   const references = [
     ...posts.map((item) => ({ type: 'post', item })),
     ...notes.map((item) => ({ type: 'note', item }))
@@ -368,14 +423,33 @@ async function synchronize(options = {}) {
   return { ...result, inactive, nextSlug: nextMapping.next_slug };
 }
 
-async function main() {
-  const result = await synchronize({
-    apiBaseUrl: process.env.CORE_API_BASE_URL || DEFAULT_API_BASE_URL
-  });
-  console.log(
+async function runContentSync(options = {}) {
+  const logger = options.logger || console;
+  let result;
+  try {
+    result = await synchronize(options);
+  } catch (error) {
+    if (options.allowUnavailable && error.transient) {
+      logger.warn(
+        `${error.message}. Existing generated posts and slug mappings were retained; ` +
+        'this build will continue without fresh content.'
+      );
+      return { skipped: true, reason: error.message };
+    }
+    throw error;
+  }
+  logger.log(
     `Synchronized ${result.total} items from Core API ` +
     `(${result.changed} changed, ${result.removed} removed, ${result.inactive} inactive mappings).`
   );
+  return { ...result, skipped: false };
+}
+
+async function main() {
+  await runContentSync({
+    apiBaseUrl: process.env.CORE_API_BASE_URL || DEFAULT_API_BASE_URL,
+    allowUnavailable: process.argv.includes('--allow-unavailable')
+  });
 }
 
 if (require.main === module) {
@@ -393,6 +467,7 @@ module.exports = {
   normalizedRemoteItem,
   originalContentUrl,
   renderPost,
+  runContentSync,
   synchronize,
   updateMapping,
   validTimestamp
