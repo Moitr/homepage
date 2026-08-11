@@ -2,16 +2,15 @@
 <section class="friends-shell">
   <header class="friends-header">
     <h1>Friends</h1>
-    <p class="friends-source"><a href="https://moitr.ren/friends" target="_blank" rel="noopener noreferrer">友链申请或查看原页面 <span aria-hidden="true">↗</span></a>，全部内容以原站为准。</p>
+    <p class="friends-source"><a href="https://moitr.ren/friends" target="_blank" rel="noopener noreferrer">友链申请或查看原页面 <span aria-hidden="true">↗</span></a>，内容以原站为准。</p>
   </header>
 
   <aside class="friends-proof" aria-label="友链链上存证">
-    <p>友链数据由自动化程序同步，并存证于 <strong>Polygon 区块链</strong>。</p>
+    <p>Friend link data is synchronized automatically and archived on the <strong>Polygon blockchain</strong>.</p>
     <% if (verifyUrl) { %>
       <div class="friends-proof-meta">
-        <% if (chain.version) { %><span>Version <%= chain.version %></span><% } %>
         <% if (chain.block_height) { %><span>Block <%= chain.block_height %></span><% } %>
-        <a href="<%= verifyUrl %>" target="_blank" rel="noopener noreferrer">验证本次记录 <span aria-hidden="true">↗</span></a>
+        <a href="<%= verifyUrl %>" target="_blank" rel="noopener noreferrer">Verify this record <span aria-hidden="true">↗</span></a>
       </div>
     <% } %>
   </aside>
