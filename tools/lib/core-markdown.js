@@ -31,7 +31,7 @@ function renderCallout(content) {
 
 function renderCoreMarkdown(markdown) {
   return String(markdown || '').replace(
-    /^:::\s*([a-z][\w-]*)(?:\s+\{[^\n]*\})?\s*\n([\s\S]*?)^:::\s*$/gim,
+    /^:::[ \t]*([a-z][\w-]*)(?:[ \t]+\{[^\n]*\})?[ \t]*\r?\n([\s\S]*?)^:::[ \t]*\r?$/gim,
     (block, type, content) => {
       if (type.toLowerCase() === 'masonry') return renderMasonry(content.trim());
       if (type.toLowerCase() === 'success') return renderCallout(content.trim());
