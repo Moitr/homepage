@@ -21,5 +21,4 @@ A personal archive of code, curiosity, and life between the lines.
 | Friend | Description |
 | --- | --- |
 | [星灯](https://eruchitand.top/) | 传颂之物 |
-| [Ayu](https://ayu.land/) | 三脚猫多面手，努力学习世界的一切。 |
 <!-- friends:end -->
