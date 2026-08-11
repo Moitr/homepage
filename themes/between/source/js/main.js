@@ -6,6 +6,16 @@
   var searchInput = document.querySelector('[data-post-search]');
   var typingGreeting = document.querySelector('[data-typing-greeting]');
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pageCleanups = [];
+
+  function registerPageCleanup(cleanup) {
+    pageCleanups.push(cleanup);
+  }
+
+  window.sitePageCleanup = function () {
+    pageCleanups.splice(0).forEach(function (cleanup) { cleanup(); });
+    window.sitePageCleanup = null;
+  };
 
   function restorePageVisibility() {
     root.classList.remove('is-leaving');
@@ -53,6 +63,8 @@
 
   if (typingGreeting) {
     var phrases = [];
+    var greetingTimer;
+    var greetingStopped = false;
 
     try {
       phrases = JSON.parse(typingGreeting.dataset.phrases || '[]');
@@ -88,9 +100,15 @@
     }
 
     fitMobileGreeting();
-    window.addEventListener('resize', function () {
+    function resizeGreeting() {
       if (!greetingIsVisible()) return;
       fitMobileGreeting(phrases[phraseIndex] || phrases[0]);
+    }
+    window.addEventListener('resize', resizeGreeting);
+    registerPageCleanup(function () {
+      greetingStopped = true;
+      window.clearTimeout(greetingTimer);
+      window.removeEventListener('resize', resizeGreeting);
     });
 
     if (!reducedMotion && phrases.length > 1) {
@@ -99,9 +117,14 @@
       var characterIndex = characters.length;
       var deleting = true;
 
+      function scheduleGreeting(delay) {
+        greetingTimer = window.setTimeout(typeNextCharacter, delay);
+      }
+
       function typeNextCharacter() {
+        if (greetingStopped) return;
         if (!greetingIsVisible()) {
-          window.setTimeout(typeNextCharacter, 400);
+          scheduleGreeting(400);
           return;
         }
 
@@ -115,11 +138,11 @@
             deleting = false;
             phraseIndex = (phraseIndex + 1) % phrases.length;
             fitMobileGreeting(phrases[phraseIndex]);
-            window.setTimeout(typeNextCharacter, 320);
+            scheduleGreeting(320);
             return;
           }
 
-          window.setTimeout(typeNextCharacter, 42);
+          scheduleGreeting(42);
           return;
         }
 
@@ -129,14 +152,14 @@
 
         if (characterIndex === characters.length) {
           deleting = true;
-          window.setTimeout(typeNextCharacter, 1800);
+          scheduleGreeting(1800);
           return;
         }
 
-        window.setTimeout(typeNextCharacter, 88);
+        scheduleGreeting(88);
       }
 
-      window.setTimeout(typeNextCharacter, 1800);
+      scheduleGreeting(1800);
     }
   }
 
@@ -322,6 +345,7 @@
         });
       }, { rootMargin: '360px 0px' });
       deferredImages.forEach(function (image) { imageObserver.observe(image); });
+      registerPageCleanup(function () { imageObserver.disconnect(); });
     }
 
     function queueDeferredImages() {
@@ -353,6 +377,7 @@
   if (latestBlockValue) {
     var latestBlockTimer;
     var latestBlockRequest;
+    var latestBlockStopped = false;
     var firstBlockRequest = true;
     var blockNumberElement = latestBlockValue.querySelector('[data-block-number]');
     var blockTicker = latestBlockValue.querySelector('.block-ticker');
@@ -389,11 +414,13 @@
     }
 
     function scheduleLatestBlock(delay) {
+      if (latestBlockStopped) return;
       window.clearTimeout(latestBlockTimer);
       latestBlockTimer = window.setTimeout(refreshLatestBlock, delay);
     }
 
     function refreshLatestBlock() {
+      if (latestBlockStopped) return;
       if (document.hidden) {
         scheduleLatestBlock(4000);
         return;
@@ -439,6 +466,11 @@
       if (document.readyState === 'complete') queueLatestBlockRefresh();
       else window.addEventListener('load', queueLatestBlockRefresh, { once: true });
     }
+    registerPageCleanup(function () {
+      latestBlockStopped = true;
+      window.clearTimeout(latestBlockTimer);
+      if (latestBlockRequest) latestBlockRequest.abort();
+    });
   }
 
   var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.article-toc a'));
@@ -464,6 +496,7 @@
         var heading = document.getElementById(id);
         if (heading) headingObserver.observe(heading);
       });
+      registerPageCleanup(function () { headingObserver.disconnect(); });
     }
   }
 
@@ -493,23 +526,4 @@
     });
   }
 
-  if (!reducedMotion) {
-    document.addEventListener('click', function (event) {
-      var link = event.target.closest('a');
-      if (!link || event.defaultPrevented || event.button !== 0) return;
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      if (link.target || link.hasAttribute('download')) return;
-
-      var destination = new URL(link.href, window.location.href);
-      if (destination.origin !== window.location.origin) return;
-      if (destination.pathname === window.location.pathname && destination.search === window.location.search) return;
-      if (root.classList.contains('is-leaving')) return;
-
-      event.preventDefault();
-      root.classList.add('is-leaving');
-      window.setTimeout(function () {
-        window.location.href = destination.href;
-      }, 160);
-    });
-  }
 }());

@@ -9,6 +9,7 @@
     "deploy": "hexo deploy",
     "server": "hexo server",
     "test": "node --test test/*.test.js",
+    "test:navigation": "node test/e2e-navigation.js",
     "content:sync": "node tools/sync-content.js",
     "readme:update": "node tools/update-readme-articles.js",
     "readme:check": "node tools/update-readme-articles.js --check",
@@ -35,7 +36,8 @@
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
     "hexo-theme-landscape": "^1.0.0",
-    "mermaid": "11.12.3"
+    "mermaid": "11.12.3",
+    "swup": "4.8.2"
   },
   "devDependencies": {
     "ethers": "6.17.0",
@@ -43,6 +45,7 @@
     "hexo-front-matter": "4.2.1",
     "js-yaml": "4.1.0",
     "marked": "15.0.12",
+    "playwright-core": "1.55.0",
     "solc": "0.8.36"
   }
 }

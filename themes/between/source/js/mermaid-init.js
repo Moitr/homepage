@@ -1,9 +1,51 @@
 import mermaid from './vendor/mermaid/mermaid.esm.min.js';
 
 const root = document.documentElement;
-const codeBlocks = Array.from(document.querySelectorAll('.article-content pre > code.mermaid'));
+let activeObserver = null;
+let renderGeneration = 0;
 
-if (codeBlocks.length) {
+function color(name) {
+  return getComputedStyle(root).getPropertyValue(name).trim();
+}
+
+function initializeMermaid() {
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'strict',
+    theme: 'base',
+    fontFamily: getComputedStyle(document.body).fontFamily,
+    flowchart: {
+      htmlLabels: true,
+      useMaxWidth: true
+    },
+    themeVariables: {
+      background: color('--soft'),
+      primaryColor: color('--bg'),
+      primaryTextColor: color('--text'),
+      primaryBorderColor: color('--line'),
+      lineColor: color('--muted'),
+      secondaryColor: color('--soft'),
+      tertiaryColor: color('--bg'),
+      clusterBkg: color('--soft'),
+      clusterBorder: color('--line'),
+      edgeLabelBackground: color('--soft'),
+      fontSize: '15px'
+    }
+  });
+}
+
+function destroyMermaid() {
+  renderGeneration += 1;
+  if (activeObserver) activeObserver.disconnect();
+  activeObserver = null;
+}
+
+async function renderSiteMermaid() {
+  destroyMermaid();
+  const generation = renderGeneration;
+  const codeBlocks = Array.from(document.querySelectorAll('.article-content pre > code.mermaid'));
+  if (!codeBlocks.length) return;
+
   let currentDark = root.classList.contains('dark');
   let rendering = false;
   let rerenderRequested = false;
@@ -14,44 +56,14 @@ if (codeBlocks.length) {
     container: null
   }));
 
-  function color(name) {
-    return getComputedStyle(root).getPropertyValue(name).trim();
-  }
-
-  function initialize() {
-    mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: 'strict',
-      theme: 'base',
-      fontFamily: getComputedStyle(document.body).fontFamily,
-      flowchart: {
-        htmlLabels: true,
-        useMaxWidth: true
-      },
-      themeVariables: {
-        background: color('--soft'),
-        primaryColor: color('--bg'),
-        primaryTextColor: color('--text'),
-        primaryBorderColor: color('--line'),
-        lineColor: color('--muted'),
-        secondaryColor: color('--soft'),
-        tertiaryColor: color('--bg'),
-        clusterBkg: color('--soft'),
-        clusterBorder: color('--line'),
-        edgeLabelBackground: color('--soft'),
-        fontSize: '15px'
-      }
-    });
-  }
-
   async function render() {
+    if (generation !== renderGeneration) return;
     if (rendering) {
       rerenderRequested = true;
       return;
     }
-
     rendering = true;
-    initialize();
+    initializeMermaid();
     for (const entry of entries) {
       entry.container.removeAttribute('data-processed');
       entry.container.textContent = entry.source;
@@ -73,8 +85,10 @@ if (codeBlocks.length) {
     }
   }
 
-  initialize();
-  Promise.all(entries.map((entry) => mermaid.parse(entry.source))).then(() => {
+  initializeMermaid();
+  try {
+    await Promise.all(entries.map((entry) => mermaid.parse(entry.source)));
+    if (generation !== renderGeneration) return;
     for (const entry of entries) {
       const figure = document.createElement('figure');
       const container = document.createElement('div');
@@ -86,16 +100,19 @@ if (codeBlocks.length) {
       entry.figure = figure;
       entry.container = container;
     }
-
-    render();
-
-    new MutationObserver(() => {
+    await render();
+    activeObserver = new MutationObserver(() => {
       const nextDark = root.classList.contains('dark');
       if (nextDark === currentDark) return;
       currentDark = nextDark;
       render();
-    }).observe(root, { attributes: true, attributeFilter: ['class'] });
-  }).catch((error) => {
+    });
+    activeObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
+  } catch (error) {
     console.error('Invalid Mermaid diagram.', error);
-  });
+  }
 }
+
+window.siteMermaidRender = renderSiteMermaid;
+window.siteMermaidDestroy = destroyMermaid;
+renderSiteMermaid();

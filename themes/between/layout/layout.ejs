@@ -39,10 +39,14 @@
   </head>
   <body class="<%= page.layout ? 'page-' + page.layout : '' %>">
     <%- partial('_partial/nav') %>
-    <main id="main-content"><%- body %></main>
-    <% if (page.layout === 'index' || page.layout === 'about' || page.path === 'index.html' || page.path === 'about/index.html') { %><%- partial('_partial/scroll-blur') %><% } %>
+    <main id="main-content">
+      <%- body %>
+      <% if (page.layout === 'index' || page.layout === 'about' || page.path === 'index.html' || page.path === 'about/index.html') { %><%- partial('_partial/scroll-blur') %><% } %>
+    </main>
     <%- partial('_partial/footer') %>
+    <script src="<%- url_for('/js/vendor/swup/swup.umd.js') %>" defer></script>
     <script src="<%- url_for('/js/main.js') %>" defer></script>
+    <script src="<%- url_for('/js/pjax.js') %>" defer></script>
     <% if (hasMermaid) { %><script type="module" src="<%- url_for('/js/mermaid-init.js') %>"></script><% } %>
   </body>
 </html>
