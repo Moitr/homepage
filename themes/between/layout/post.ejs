@@ -17,7 +17,7 @@
         <time datetime="<%= page.date.toISOString() %>"><%= page.date.format('MMM DD, YYYY HH:mm') %></time>
         <% if (page.tags && page.tags.length) { %>
           <span aria-hidden="true"> | </span>
-          <% page.tags.each(function (tag, index) { %><a href="<%- url_for(tag.path) %>">#<%= tag.name %></a><%= index < page.tags.length - 1 ? ' ' : '' %><% }); %>
+          <% page.tags.each(function (tag, index) { %><span>#<%= tag.name %></span><%= index < page.tags.length - 1 ? ' ' : '' %><% }); %>
         <% } %>
       </div>
       <%- partial('_partial/article-onchain', { articleChain: article_onchain_meta(page.slug) }) %>

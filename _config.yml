@@ -19,7 +19,7 @@ highlight:
 marked:
   lazyload: true
 
-# Keep only the main archive index; posts use /archives/:slug/.
+# Keep the main archive index; posts use /archives/:slug/.
 archive_generator:
   yearly: false
 
