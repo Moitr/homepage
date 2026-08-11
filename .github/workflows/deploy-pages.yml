@@ -45,7 +45,7 @@ jobs:
       - name: Synchronize friend links
         run: pnpm links:sync
 
-      - name: Update README article list
+      - name: Update README content lists
         run: pnpm readme:update
 
       - name: Test on-chain publisher
@@ -61,7 +61,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "content: synchronize articles"
+          git commit -m "content: synchronize site data"
           git push origin HEAD:main
 
       - name: Build site

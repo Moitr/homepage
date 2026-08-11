@@ -14,3 +14,11 @@ A personal archive of code, curiosity, and life between the lines.
 | 2 | [使用 Docker 搭建一个视奸自己的网站](https://moitr.cc/archives/2/) | [Original](https://moitr.ren/posts/categories/build-self-monitoring-website-with-docker) | 2026-04-23 |
 | 1 | [新的开始](https://moitr.cc/archives/1/) | [Original](https://moitr.ren/posts/categories/new-beginning) | 2025-11-21 |
 <!-- articles:end -->
+
+## Friends
+
+<!-- friends:start -->
+| Friend | Description |
+| --- | --- |
+| [星灯](https://eruchitand.top/) | 传颂之物 |
+<!-- friends:end -->

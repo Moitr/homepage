@@ -7,8 +7,10 @@ const { loadArticles } = require('./lib/article-onchain');
 
 const ROOT = path.join(__dirname, '..');
 const README_PATH = path.join(ROOT, 'README.md');
-const START_MARKER = '<!-- articles:start -->';
-const END_MARKER = '<!-- articles:end -->';
+const ARTICLE_START_MARKER = '<!-- articles:start -->';
+const ARTICLE_END_MARKER = '<!-- articles:end -->';
+const FRIEND_START_MARKER = '<!-- friends:start -->';
+const FRIEND_END_MARKER = '<!-- friends:end -->';
 
 function markdownText(value) {
   return String(value).replace(/([\\\[\]|])/g, '\\$1').replace(/\s+/g, ' ').trim();
@@ -42,26 +44,63 @@ function renderArticleList(root) {
   ].join('\n');
 }
 
-function updateReadmeContent(readme, articleList) {
-  const start = readme.indexOf(START_MARKER);
-  const end = readme.indexOf(END_MARKER);
+function renderFriendList(root) {
+  const snapshotPath = path.join(root, '.onchain', 'friend-links.json');
+  if (!fs.existsSync(snapshotPath)) return null;
+  const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+  const links = Array.isArray(snapshot.data) ? snapshot.data : [];
+  const rows = links.map((link) => (
+    `| [${markdownText(link.name)}](${String(link.url).replace(/\)/g, '%29')}) | ${markdownText(link.description || '—')} |`
+  ));
+  return [
+    '| Friend | Description |',
+    '| --- | --- |',
+    ...rows
+  ].join('\n');
+}
+
+function updateMarkedSection(readme, content, startMarker, endMarker, label) {
+  const start = readme.indexOf(startMarker);
+  const end = readme.indexOf(endMarker);
   if (start === -1 || end === -1 || end < start) {
-    throw new Error(`README.md must contain ${START_MARKER} and ${END_MARKER}.`);
+    throw new Error(`README.md must contain ${startMarker} and ${endMarker}.`);
   }
-  if (readme.indexOf(START_MARKER, start + START_MARKER.length) !== -1 ||
-      readme.indexOf(END_MARKER, end + END_MARKER.length) !== -1) {
-    throw new Error('README.md article markers must appear exactly once.');
+  if (readme.indexOf(startMarker, start + startMarker.length) !== -1 ||
+      readme.indexOf(endMarker, end + endMarker.length) !== -1) {
+    throw new Error(`README.md ${label} markers must appear exactly once.`);
   }
 
-  const before = readme.slice(0, start + START_MARKER.length);
+  const before = readme.slice(0, start + startMarker.length);
   const after = readme.slice(end);
-  return `${before}\n${articleList}\n${after}`.replace(/\r\n/g, '\n').replace(/\n*$/, '\n');
+  return `${before}\n${content}\n${after}`.replace(/\r\n/g, '\n').replace(/\n*$/, '\n');
+}
+
+function updateReadmeContent(readme, articleList) {
+  return updateMarkedSection(
+    readme,
+    articleList,
+    ARTICLE_START_MARKER,
+    ARTICLE_END_MARKER,
+    'article'
+  );
+}
+
+function updateFriendReadmeContent(readme, friendList) {
+  return updateMarkedSection(
+    readme,
+    friendList,
+    FRIEND_START_MARKER,
+    FRIEND_END_MARKER,
+    'friend'
+  );
 }
 
 function expectedReadme(root = ROOT) {
   const readmePath = path.join(root, 'README.md');
   const current = fs.readFileSync(readmePath, 'utf8');
-  return updateReadmeContent(current, renderArticleList(root));
+  const withArticles = updateReadmeContent(current, renderArticleList(root));
+  const friendList = renderFriendList(root);
+  return friendList === null ? withArticles : updateFriendReadmeContent(withArticles, friendList);
 }
 
 function main() {
@@ -69,18 +108,18 @@ function main() {
   const expected = expectedReadme();
   if (process.argv.includes('--check')) {
     if (current !== expected) {
-      throw new Error('README.md article list is outdated. Run pnpm readme:update.');
+      throw new Error('README.md content lists are outdated. Run pnpm readme:update.');
     }
-    console.log('README.md article list is current.');
+    console.log('README.md content lists are current.');
     return;
   }
 
   if (current === expected) {
-    console.log('README.md article list is already current.');
+    console.log('README.md content lists are already current.');
     return;
   }
   fs.writeFileSync(README_PATH, expected, 'utf8');
-  console.log('Updated README.md article list.');
+  console.log('Updated README.md content lists.');
 }
 
 if (require.main === module) {
@@ -95,5 +134,7 @@ if (require.main === module) {
 module.exports = {
   expectedReadme,
   renderArticleList,
+  renderFriendList,
+  updateFriendReadmeContent,
   updateReadmeContent
 };
