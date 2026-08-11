@@ -11,7 +11,13 @@
       (function () {
         var saved = localStorage.getItem('color-theme');
         var dark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var navigationEntry = window.performance && window.performance.getEntriesByType
+          ? window.performance.getEntriesByType('navigation')[0]
+          : null;
         document.documentElement.classList.toggle('dark', dark);
+        if (navigationEntry && navigationEntry.type === 'back_forward') {
+          document.documentElement.classList.add('is-history-return');
+        }
       }());
     </script>
     <link rel="preload" href="<%- url_for('/fonts/files/inter-latin-standard-normal.woff2') %>" as="font" type="font/woff2" crossorigin>

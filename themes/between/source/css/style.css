@@ -217,6 +217,14 @@ html.is-leaving .site-footer {
   transition: opacity 160ms ease, transform 160ms ease;
 }
 
+html.is-history-return:not(.is-leaving) #main-content,
+html.is-history-return:not(.is-leaving) .site-footer {
+  opacity: 1;
+  transform: none;
+  animation: none;
+  transition: none;
+}
+
 @keyframes page-enter {
   from {
     opacity: 0;
@@ -519,17 +527,20 @@ html.is-leaving .site-footer {
 }
 
 .block-loader {
-  display: none;
+  display: inline-block;
   flex: 0 0 auto;
   width: 10px;
   height: 10px;
   border: 1.5px solid var(--line);
   border-top-color: var(--accent);
   border-radius: 50%;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .onchain-value-wrap.is-block-loading .block-loader {
-  display: inline-block;
+  opacity: 1;
+  visibility: visible;
   animation: loading-spin 700ms linear infinite;
 }
 
@@ -2044,6 +2055,7 @@ html.is-leaving .site-footer {
   }
 
   .about-intro h1 {
+    min-height: 48px;
     gap: 8px;
     margin-bottom: 26px;
     font-size: 40px;

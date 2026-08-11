@@ -7,8 +7,28 @@
   var typingGreeting = document.querySelector('[data-typing-greeting]');
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  window.addEventListener('pageshow', function () {
+  function restorePageVisibility() {
     root.classList.remove('is-leaving');
+  }
+
+  window.addEventListener('pageshow', function (event) {
+    var navigationEntry = window.performance && window.performance.getEntriesByType
+      ? window.performance.getEntriesByType('navigation')[0]
+      : null;
+
+    restorePageVisibility();
+    root.classList.toggle('is-history-return', Boolean(
+      event.persisted || (navigationEntry && navigationEntry.type === 'back_forward')
+    ));
+  });
+
+  window.addEventListener('pagehide', function () {
+    restorePageVisibility();
+    root.classList.add('is-history-return');
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) restorePageVisibility();
   });
 
   function updateThemeColor() {
@@ -40,6 +60,13 @@
       phrases = [];
     }
 
+    function greetingIsVisible() {
+      var heading = typingGreeting.closest('h1');
+      if (!heading) return false;
+      var rect = heading.getBoundingClientRect();
+      return rect.bottom >= 0 && rect.top <= window.innerHeight;
+    }
+
     function fitMobileGreeting(phrase) {
       var heading = typingGreeting.closest('h1');
       if (!heading) return;
@@ -62,6 +89,7 @@
 
     fitMobileGreeting();
     window.addEventListener('resize', function () {
+      if (!greetingIsVisible()) return;
       fitMobileGreeting(phrases[phraseIndex] || phrases[0]);
     });
 
@@ -72,6 +100,11 @@
       var deleting = true;
 
       function typeNextCharacter() {
+        if (!greetingIsVisible()) {
+          window.setTimeout(typeNextCharacter, 400);
+          return;
+        }
+
         characters = Array.from(phrases[phraseIndex]);
 
         if (deleting) {
