@@ -398,8 +398,46 @@
     document.body.appendChild(script);
   }
 
+  function initializePageEntrance() {
+    if (reducedMotion) return function () {};
+    var selectors = [
+      '.about-intro h1',
+      '.about-intro > p',
+      '.about-intro .text-links',
+      '.about-details > .details-column',
+      '.blog-shell > .search-field',
+      '.blog-shell > .post-group',
+      '.friends-header > *',
+      '.friends-proof',
+      '.friend-card',
+      '.article-header > *',
+      '.article-origin',
+      '.article-content',
+      '.article-footer',
+      '.simple-page > *'
+    ];
+    var items = Array.prototype.slice.call(document.querySelectorAll(selectors.join(',')));
+    var timer;
+
+    items.forEach(function (item, index) {
+      item.classList.add('page-enter-item');
+      item.style.setProperty('--page-enter-order', String(Math.min(index, 7)));
+    });
+
+    function clear() {
+      window.clearTimeout(timer);
+      items.forEach(function (item) {
+        item.classList.remove('page-enter-item');
+        item.style.removeProperty('--page-enter-order');
+      });
+    }
+
+    timer = window.setTimeout(clear, 1100);
+    return clear;
+  }
+
   function initializePage() {
-    var cleanups = [initializeDeferredImages(), initializeGreeting(), initializeLatestBlock(), initializeToc()];
+    var cleanups = [initializeDeferredImages(), initializeGreeting(), initializeLatestBlock(), initializeToc(), initializePageEntrance()];
     initializeCopyButtons();
     initializeShareButtons();
     initializeExpandButtons();

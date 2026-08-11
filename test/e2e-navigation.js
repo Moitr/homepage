@@ -28,6 +28,13 @@ async function assertTransitionFinished(page) {
   await page.waitForFunction(() => !document.documentElement.classList.contains('is-changing'));
 }
 
+async function assertContentEntrance(page, selector) {
+  assert.equal(await page.locator(selector).first().evaluate((element) => (
+    element.classList.contains('page-enter-item') &&
+    getComputedStyle(element).animationName === 'page-content-rise'
+  )), true);
+}
+
 async function desktopNavigation(browser) {
   const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
   const page = await context.newPage();
@@ -39,6 +46,7 @@ async function desktopNavigation(browser) {
   await page.waitForURL('**/friends/');
   await page.locator('.friends-shell').waitFor();
   assert.ok(await page.locator('.friend-card').count() > 0);
+  await assertContentEntrance(page, '.friends-header h1');
   await assertTransitionFinished(page);
   await assertPjax(page);
 
@@ -52,12 +60,14 @@ async function desktopNavigation(browser) {
   await page.locator('.desktop-nav .nav-link[href="/blog/"]').click();
   await page.waitForURL('**/blog/');
   await page.locator('.blog-shell').waitFor();
+  await assertContentEntrance(page, '.post-group');
   await assertPjax(page);
 
   await page.locator('.post-row a[href="/archives/4/"]').hover();
   await page.locator('.post-row a[href="/archives/4/"]').click();
   await page.waitForURL('**/archives/4/');
   await page.locator('.article-shell').waitFor();
+  await assertContentEntrance(page, '.article-header h1');
   await page.locator('.mermaid-diagram svg').waitFor({ timeout: 20_000 });
   await assertPjax(page);
 
@@ -85,6 +95,7 @@ async function mobileNavigation(browser) {
   await page.waitForURL('**/friends/');
   await page.locator('.friends-shell').waitFor();
   assert.ok(await page.locator('.friend-card').count() > 0);
+  await assertContentEntrance(page, '.friends-header h1');
   assert.equal(await page.locator('#mobile-menu').getAttribute('aria-hidden'), 'true');
   await assertTransitionFinished(page);
   await assertPjax(page);

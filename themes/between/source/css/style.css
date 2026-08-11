@@ -268,6 +268,21 @@ html.is-pjax-ready:not(.swup-native).is-animating .site-footer {
   }
 }
 
+.page-enter-item {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: page-content-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(40ms + var(--page-enter-order, 0) * 45ms);
+  will-change: opacity, transform;
+}
+
+@keyframes page-content-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes page-enter {
   from {
     opacity: 0;
