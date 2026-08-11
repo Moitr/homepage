@@ -56,6 +56,14 @@ async function renderSiteMermaid() {
     container: null
   }));
 
+  function restoreSources() {
+    for (const entry of entries) {
+      if (entry.figure && entry.figure.isConnected) entry.figure.replaceWith(entry.original);
+      const code = entry.original.querySelector('code.mermaid');
+      if (code) code.classList.remove('mermaid');
+    }
+  }
+
   async function render() {
     if (generation !== renderGeneration) return;
     if (rendering) {
@@ -65,17 +73,24 @@ async function renderSiteMermaid() {
     rendering = true;
     initializeMermaid();
     for (const entry of entries) {
+      entry.figure.classList.remove('is-ready');
+      entry.figure.setAttribute('aria-busy', 'true');
       entry.container.removeAttribute('data-processed');
       entry.container.textContent = entry.source;
     }
 
     try {
       await mermaid.run({ nodes: entries.map((entry) => entry.container) });
-    } catch (error) {
+      if (generation !== renderGeneration) return false;
       for (const entry of entries) {
-        if (entry.figure && entry.figure.isConnected) entry.figure.replaceWith(entry.original);
+        entry.figure.classList.add('is-ready');
+        entry.figure.setAttribute('aria-busy', 'false');
       }
+      return true;
+    } catch (error) {
+      restoreSources();
       console.error('Unable to render Mermaid diagram.', error);
+      return false;
     } finally {
       rendering = false;
       if (rerenderRequested) {
@@ -93,6 +108,7 @@ async function renderSiteMermaid() {
       const figure = document.createElement('figure');
       const container = document.createElement('div');
       figure.className = 'mermaid-diagram';
+      figure.setAttribute('aria-busy', 'true');
       container.className = 'mermaid';
       container.textContent = entry.source;
       figure.appendChild(container);
@@ -100,7 +116,7 @@ async function renderSiteMermaid() {
       entry.figure = figure;
       entry.container = container;
     }
-    await render();
+    if (!await render()) return;
     activeObserver = new MutationObserver(() => {
       const nextDark = root.classList.contains('dark');
       if (nextDark === currentDark) return;
@@ -109,6 +125,7 @@ async function renderSiteMermaid() {
     });
     activeObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
   } catch (error) {
+    restoreSources();
     console.error('Invalid Mermaid diagram.', error);
   }
 }
