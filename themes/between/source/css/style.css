@@ -1883,6 +1883,18 @@ html.is-history-return:not(.is-leaving) .site-footer {
   font-weight: 500;
 }
 
+.site-footer-build {
+  text-decoration: none;
+}
+
+.site-footer-build code {
+  transition: color 150ms ease;
+}
+
+.site-footer-build:hover code {
+  color: var(--accent);
+}
+
 @media (max-width: 799px) {
   .article-shell {
     display: block;

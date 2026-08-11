@@ -6,7 +6,7 @@ const root = hexo.base_dir;
 
 function normalizeCommitHash(value) {
   const hash = String(value || '').trim();
-  return /^[0-9a-f]{7,40}$/i.test(hash) ? hash.slice(0, 8).toLowerCase() : '';
+  return /^[0-9a-f]{7,40}$/i.test(hash) ? hash.toLowerCase() : '';
 }
 
 function getCommitHash() {
@@ -19,10 +19,19 @@ function getCommitHash() {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore']
     });
-    return normalizeCommitHash(localHash) || 'unknown';
+    return normalizeCommitHash(localHash);
   } catch (error) {
-    return 'unknown';
+    return '';
   }
+}
+
+function getCommitUrl(hash) {
+  if (!hash) return '';
+  const serverUrl = String(process.env.GITHUB_SERVER_URL || 'https://github.com').replace(/\/+$/, '');
+  const repository = String(process.env.GITHUB_REPOSITORY || 'Moitr/homepage').trim();
+  return /^[\w.-]+\/[\w.-]+$/.test(repository)
+    ? `${serverUrl}/${repository}/commit/${hash}`
+    : '';
 }
 
 function formatBuildTime(date) {
@@ -46,8 +55,10 @@ function formatBuildTime(date) {
 }
 
 const buildStartedAt = new Date();
+const commitHash = getCommitHash();
 const buildMeta = Object.freeze({
-  hash: getCommitHash(),
+  hash: commitHash ? commitHash.slice(0, 8) : 'unknown',
+  url: getCommitUrl(commitHash),
   datetime: buildStartedAt.toISOString(),
   time: formatBuildTime(buildStartedAt)
 });

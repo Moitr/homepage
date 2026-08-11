@@ -1,4 +1,4 @@
 <% const build = build_meta(); %>
 <footer class="site-footer">
-  <span>Build <code><%= build.hash %></code> &middot; <time datetime="<%= build.datetime %>"><%= build.time %> UTC+8</time></span>
+  <span>Build <% if (build.url) { %><a class="site-footer-build" href="<%= build.url %>" target="_blank" rel="noopener noreferrer" aria-label="View commit <%= build.hash %> on GitHub"><code><%= build.hash %></code></a><% } else { %><code><%= build.hash %></code><% } %> &middot; <time datetime="<%= build.datetime %>"><%= build.time %> UTC+8</time></span>
 </footer>
