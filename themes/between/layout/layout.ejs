@@ -23,7 +23,6 @@
     <link rel="preload" href="<%- url_for('/fonts/files/inter-latin-standard-normal.woff2') %>" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="<%- url_for('/fonts/fonts.css') %>">
     <% const hasCode = page.layout === 'post' && /<(pre|figure class="highlight")\b/.test(page.content || ''); %>
-    <% const hasMermaid = page.layout === 'post' && /<code class="[^"]*\bmermaid\b/.test(page.content || ''); %>
     <% if (hasCode) { %>
       <link id="highlight-light-theme" rel="stylesheet" href="<%- url_for('/css/vendor/highlight-catppuccin-latte.css') %>">
       <link id="highlight-dark-theme" rel="stylesheet" href="<%- url_for('/css/vendor/highlight-catppuccin-macchiato.css') %>" media="not all">
@@ -47,6 +46,5 @@
     <script src="<%- url_for('/js/vendor/swup/swup.umd.js') %>" defer></script>
     <script src="<%- url_for('/js/main.js') %>" defer></script>
     <script src="<%- url_for('/js/pjax.js') %>" defer></script>
-    <% if (hasMermaid) { %><script type="module" src="<%- url_for('/js/mermaid-init.js') %>"></script><% } %>
   </body>
 </html>

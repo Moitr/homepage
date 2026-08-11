@@ -1769,13 +1769,10 @@ html.is-closing-article::view-transition-new(site-content) {
   object-fit: cover;
 }
 
-.article-content > pre:has(> code.mermaid),
 .article-content .mermaid-diagram {
-  position: relative;
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  min-height: 180px;
   margin: 34px 0 40px;
   padding: 24px;
   overflow-x: auto;
@@ -1787,70 +1784,23 @@ html.is-closing-article::view-transition-new(site-content) {
   scrollbar-width: thin;
 }
 
-.article-content > pre:has(> code.mermaid) > code.mermaid,
-.article-content > pre:has(> code.mermaid) > .code-copy,
-.article-content .mermaid-diagram:not(.is-ready) .mermaid {
-  display: none;
-}
-
-.article-content > pre:has(> code.mermaid)::before,
-.article-content .mermaid-diagram:not(.is-ready)::before {
-  position: absolute;
-  z-index: 1;
-  top: calc(50% - 18px);
-  right: auto;
-  left: 50%;
-  width: 18px;
-  height: 18px;
-  padding: 0;
-  border: 2px solid color-mix(in srgb, var(--faint), transparent 35%);
-  border-top-color: var(--text);
-  border-radius: 50%;
-  background: transparent;
-  content: "";
-  transform: translate(-50%, -50%);
-  animation: mermaid-loading-spin 700ms linear infinite;
-}
-
-.article-content > pre:has(> code.mermaid)::after,
-.article-content .mermaid-diagram:not(.is-ready)::after {
-  position: absolute;
-  top: calc(50% + 11px);
-  left: 50%;
-  color: var(--muted);
-  content: "Rendering diagram";
-  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
-  font-size: 11px;
-  line-height: 1;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-
-@keyframes mermaid-loading-spin {
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-.article-content .mermaid-diagram .mermaid {
+.article-content .mermaid-theme {
   width: 100%;
   min-width: 0;
 }
 
-.article-content .mermaid-diagram.is-ready .mermaid {
-  animation: mermaid-diagram-reveal 260ms ease both;
+.article-content .mermaid-layout-tall .mermaid-theme {
+  width: min(100%, 380px);
+  margin: 0 auto;
 }
 
-@keyframes mermaid-diagram-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
+.article-content .mermaid-theme-dark,
+.dark .article-content .mermaid-theme-light {
+  display: none;
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.dark .article-content .mermaid-theme-dark {
+  display: block;
 }
 
 .article-content .mermaid-diagram svg {

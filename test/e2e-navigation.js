@@ -84,7 +84,8 @@ async function desktopNavigation(browser) {
     '← Back to Blogs'
   );
   assert.equal(await page.locator('.article-footer a').count(), 0);
-  await page.locator('.mermaid-diagram svg').waitFor({ timeout: 20_000 });
+  await page.locator('.mermaid-static .mermaid-theme-light svg').first().waitFor({ timeout: 20_000 });
+  assert.equal(await page.locator('script[src*="mermaid"]').count(), 0);
   await assertPjax(page);
 
   await page.goBack();
