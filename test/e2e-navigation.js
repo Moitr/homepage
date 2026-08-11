@@ -55,8 +55,8 @@ async function desktopNavigation(browser) {
   assert.ok(await page.locator('.friend-card').count() > 0);
   assert.equal(await page.locator('.friends-header h1').innerText(), '友谊地久天长。');
   assert.equal(await page.locator('.friends-tagline').count(), 0);
-  assert.equal(await page.locator('.friends-proof').innerText().then((text) => text.includes('区块链')), false);
-  assert.equal(await page.locator('.friends-proof a[href="https://moitr.ren/friends"]').count(), 1);
+  assert.equal(await page.locator('.friends-provenance').innerText().then((text) => text.includes('区块链')), false);
+  assert.equal(await page.locator('.friends-provenance a[href="https://moitr.ren/friends"]').count(), 1);
   await assertContentEntrance(page, '.friends-header h1');
   await assertTransitionFinished(page);
   await assertPjax(page);
