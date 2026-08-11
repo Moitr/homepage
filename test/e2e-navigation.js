@@ -35,6 +35,13 @@ async function assertContentEntrance(page, selector) {
   )), true);
 }
 
+async function assertDirectionalEntrance(page, selector, animationName) {
+  assert.equal(await page.locator(selector).first().evaluate((element, expected) => (
+    element.classList.contains('page-enter-item') &&
+    getComputedStyle(element).animationName === expected
+  ), animationName), true);
+}
+
 async function desktopNavigation(browser) {
   const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
   const page = await context.newPage();
@@ -67,14 +74,27 @@ async function desktopNavigation(browser) {
   await page.locator('.post-row a[href="/archives/4/"]').click();
   await page.waitForURL('**/archives/4/');
   await page.locator('.article-shell').waitFor();
-  await assertContentEntrance(page, '.article-header h1');
+  await assertDirectionalEntrance(page, '.article-header h1', 'article-content-pop');
+  assert.equal(
+    (await page.locator('.article-header-topline .article-back').textContent()).replace(/\s+/g, ' ').trim(),
+    '← Back to Blogs'
+  );
+  assert.equal(await page.locator('.article-footer a').count(), 0);
   await page.locator('.mermaid-diagram svg').waitFor({ timeout: 20_000 });
   await assertPjax(page);
 
   await page.goBack();
   await page.waitForURL('**/blog/');
   await page.locator('.blog-shell').waitFor();
+  await assertDirectionalEntrance(page, '.post-group', 'page-content-return');
   await assertPjax(page);
+
+  await page.locator('.post-row a[href="/archives/4/"]').click();
+  await page.waitForURL('**/archives/4/');
+  await page.locator('.article-back').click();
+  await page.waitForURL('**/blog/');
+  await page.locator('.blog-shell').waitFor();
+  await assertDirectionalEntrance(page, '.post-group', 'page-content-return');
   await context.close();
 }
 

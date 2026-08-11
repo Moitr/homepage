@@ -6,6 +6,24 @@
   var root = document.documentElement;
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var nativeTransitions = !reducedMotion && typeof document.startViewTransition === 'function';
+  var directionTimer;
+
+  function articlePath(url) {
+    var pathname = new URL(url || window.location.href, window.location.href).pathname;
+    return /^\/archives\/[^/]+\/?$/.test(pathname);
+  }
+
+  function setNavigationDirection(visit) {
+    window.clearTimeout(directionTimer);
+    root.classList.remove('is-opening-article', 'is-closing-article');
+    var fromArticle = articlePath(visit.from.url);
+    var toArticle = articlePath(visit.to.url);
+    if (!fromArticle && toArticle) root.classList.add('is-opening-article');
+    if (fromArticle && !toArticle) root.classList.add('is-closing-article');
+    directionTimer = window.setTimeout(function () {
+      root.classList.remove('is-opening-article', 'is-closing-article');
+    }, 1300);
+  }
 
   function closeMobileMenu() {
     var button = document.querySelector('[data-menu-toggle]');
@@ -458,6 +476,7 @@
     hooks: {
       'visit:start': function (visit) {
         root.classList.add('is-pjax-ready');
+        setNavigationDirection(visit);
         if (reducedMotion) visit.animation.animate = false;
         else visit.animation.wait = true;
         if (window.sitePageCleanup) window.sitePageCleanup();

@@ -283,6 +283,80 @@ html.is-pjax-ready:not(.swup-native).is-animating .site-footer {
   }
 }
 
+html.is-opening-article .page-enter-item {
+  animation-name: article-content-pop;
+}
+
+html.is-closing-article .page-enter-item {
+  animation-name: page-content-return;
+}
+
+@keyframes article-content-pop {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes page-content-return {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+html.is-opening-article::view-transition-old(site-content) {
+  animation: article-list-recede 220ms ease both;
+}
+
+html.is-opening-article::view-transition-new(site-content) {
+  animation: article-page-pop 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html.is-closing-article::view-transition-old(site-content) {
+  animation: article-page-close 260ms ease both;
+}
+
+html.is-closing-article::view-transition-new(site-content) {
+  animation: article-list-return 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes article-list-recede {
+  to {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.99);
+  }
+}
+
+@keyframes article-page-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.975);
+  }
+}
+
+@keyframes article-page-close {
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+}
+
+@keyframes article-list-return {
+  from {
+    opacity: 0;
+    transform: translateY(-9px) scale(0.99);
+  }
+}
+
 @keyframes page-enter {
   from {
     opacity: 0;
@@ -1156,6 +1230,30 @@ html.is-pjax-ready:not(.swup-native).is-animating .site-footer {
   font-size: 11px;
   font-weight: 560;
   text-transform: uppercase;
+}
+
+.article-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-family: "Inter Variable", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 12px;
+  font-weight: 620;
+  text-decoration: none;
+  text-transform: none;
+  transition: color 150ms ease, transform 180ms ease;
+}
+
+.article-back:hover,
+.article-back:focus-visible {
+  color: var(--text);
+  transform: translateX(-2px);
+}
+
+.article-back span {
+  font-size: 14px;
+  line-height: 1;
 }
 
 .article-header h1 {
