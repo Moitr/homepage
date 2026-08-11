@@ -5,6 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    # Every 8 hours: 08:20, 16:20 and 00:20 Asia/Shanghai.
+    - cron: "20 */8 * * *"
 
 permissions:
   contents: write
@@ -36,6 +39,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Synchronize articles and notes
+        run: pnpm content:sync
+
       - name: Synchronize friend links
         run: pnpm links:sync
 
@@ -45,17 +51,17 @@ jobs:
       - name: Test on-chain publisher
         run: pnpm test
 
-      - name: Commit README article list
+      - name: Commit synchronized content
         shell: bash
         run: |
-          if git diff --quiet -- README.md; then
-            echo "README.md article list is already current."
+          git add -A -- source/_posts .content-sync-map.json README.md
+          if git diff --cached --quiet; then
+            echo "Synchronized content is already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "docs: refresh article list"
+          git commit -m "content: synchronize articles"
           git push origin HEAD:main
 
       - name: Build site

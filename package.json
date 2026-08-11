@@ -9,6 +9,7 @@
     "deploy": "hexo deploy",
     "server": "hexo server",
     "test": "node --test test/*.test.js",
+    "content:sync": "node tools/sync-content.js",
     "readme:update": "node tools/update-readme-articles.js",
     "readme:check": "node tools/update-readme-articles.js --check",
     "links:sync": "node tools/sync-friend-links.js",
