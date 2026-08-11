@@ -9,9 +9,9 @@ about:
   greetings:
     - "Hello！"
     - "你好！"
-    - "こんにちは、ようこそ!"
-    - "Bonjour, bienvenue!"
-    - "안녕하세요, 환영해요!"
+    - "こんにちは!"
+    - "Bonjour!"
+    - "안녕하세요!"
   intro: >-
     I'm Ruiyang Dong (@Moitr), A student shaping code and chasing poetry.
     I build with logic, live with curiosity, and find beauty between the lines.
