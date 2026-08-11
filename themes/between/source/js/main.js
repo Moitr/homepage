@@ -223,6 +223,15 @@
     });
   });
 
+  document.querySelectorAll('[data-friend-avatar]').forEach(function (avatar) {
+    function hideBrokenAvatar() {
+      avatar.hidden = true;
+    }
+
+    avatar.addEventListener('error', hideBrokenAvatar, { once: true });
+    if (avatar.complete && avatar.naturalWidth === 0) hideBrokenAvatar();
+  });
+
   document.querySelectorAll('[data-onchain-expand]').forEach(function (button) {
     button.addEventListener('click', function () {
       var wrapper = button.closest('.onchain-value-wrap');

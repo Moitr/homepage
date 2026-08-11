@@ -1,0 +1,43 @@
+<% const links = friend_links(); const chain = friend_links_onchain_meta(); const verifyUrl = chain.transaction_hash ? 'https://polygonscan.com/tx/' + chain.transaction_hash : (chain.contract_address ? 'https://polygonscan.com/address/' + chain.contract_address : ''); %>
+<section class="friends-shell">
+  <header class="friends-header">
+    <div>
+      <span class="friends-eyebrow">OPEN WEB DIRECTORY</span>
+      <h1>Friends</h1>
+      <p>在互联网相遇，并持续交换灵感的人。</p>
+    </div>
+    <span class="friends-count"><strong><%= String(links.length).padStart(2, '0') %></strong> <%= links.length === 1 ? 'CONNECTION' : 'CONNECTIONS' %></span>
+  </header>
+
+  <aside class="friends-proof" aria-label="友链链上存证">
+    <p>友链数据由自动化程序同步，并存证于 <strong>Polygon 区块链</strong>。每次变更都会留下公开、可验证的链上记录。</p>
+    <% if (verifyUrl) { %>
+      <div class="friends-proof-meta">
+        <% if (chain.version) { %><span>Version <%= chain.version %></span><% } %>
+        <% if (chain.block_height) { %><span>Block <%= chain.block_height %></span><% } %>
+        <a href="<%= verifyUrl %>" target="_blank" rel="noopener noreferrer">验证本次记录 <span aria-hidden="true">↗</span></a>
+      </div>
+    <% } %>
+  </aside>
+
+  <% if (links.length) { %>
+    <div class="friends-grid">
+      <% links.forEach(function (link) { let hostname = ''; try { hostname = new URL(link.url).hostname.replace(/^www\./, ''); } catch (error) {} const initial = Array.from(String(link.name || '?').trim())[0] || '?'; %>
+        <a class="friend-card" href="<%= link.url %>" target="_blank" rel="noopener noreferrer" aria-label="访问 <%= link.name %>">
+          <span class="friend-avatar" aria-hidden="true">
+            <span><%= initial %></span>
+            <% if (link.avatar) { %><img src="<%= link.avatar %>" alt="" width="52" height="52" loading="lazy" decoding="async" data-friend-avatar><% } %>
+          </span>
+          <span class="friend-copy">
+            <strong><%= link.name %></strong>
+            <span><%= link.description || hostname %></span>
+            <% if (link.description && hostname) { %><small><%= hostname %></small><% } %>
+          </span>
+          <span class="friend-arrow" aria-hidden="true">↗</span>
+        </a>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <p class="friends-empty">暂无公开友链。</p>
+  <% } %>
+</section>

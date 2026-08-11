@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Synchronize friend links
+        run: pnpm links:sync
+
       - name: Update README article list
         run: pnpm readme:update
 
@@ -75,6 +78,7 @@ jobs:
           fi
           pnpm onchain:publish
           pnpm onchain:publish:articles
+          pnpm onchain:publish:links
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
       - name: Rebuild with on-chain metadata
