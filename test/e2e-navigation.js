@@ -53,6 +53,9 @@ async function desktopNavigation(browser) {
   await page.waitForURL('**/friends/');
   await page.locator('.friends-shell').waitFor();
   assert.ok(await page.locator('.friend-card').count() > 0);
+  assert.equal(await page.locator('.friends-grid').evaluate((element) => (
+    getComputedStyle(element).gridTemplateColumns.split(' ').length
+  )), 4);
   assert.equal(await page.locator('.friends-header h1').innerText(), '友谊地久天长。');
   assert.equal(await page.locator('.friends-tagline').count(), 0);
   assert.equal(await page.locator('.friends-provenance').innerText().then((text) => text.includes('区块链')), false);
@@ -120,6 +123,9 @@ async function mobileNavigation(browser) {
   await page.waitForURL('**/friends/');
   await page.locator('.friends-shell').waitFor();
   assert.ok(await page.locator('.friend-card').count() > 0);
+  assert.equal(await page.locator('.friends-grid').evaluate((element) => (
+    getComputedStyle(element).gridTemplateColumns.split(' ').length
+  )), 1);
   assert.equal(await page.locator('.friends-header h1').innerText(), '友谊地久天长。');
   await assertContentEntrance(page, '.friends-header h1');
   assert.equal(await page.locator('#mobile-menu').getAttribute('aria-hidden'), 'true');

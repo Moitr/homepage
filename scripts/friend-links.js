@@ -2,10 +2,11 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { shuffledCopy } = require('../tools/lib/friend-links-page');
+const { shuffledForBuild } = require('../tools/lib/friend-links-page');
 
 const snapshotPath = path.join(hexo.base_dir, '.onchain', 'friend-links.json');
 const metadataPath = path.join(hexo.base_dir, '.onchain', 'friend-links-meta.json');
+const buildNumber = process.env.GITHUB_RUN_NUMBER || process.env.GITHUB_RUN_ID || Date.now();
 
 function readJson(file, fallback, label) {
   if (!fs.existsSync(file)) return fallback;
@@ -19,7 +20,7 @@ function readJson(file, fallback, label) {
 
 hexo.extend.helper.register('friend_links_randomized', () => {
   const snapshot = readJson(snapshotPath, { data: [] }, 'friend links snapshot');
-  return shuffledCopy(snapshot.data);
+  return shuffledForBuild(snapshot.data, buildNumber);
 });
 
 hexo.extend.helper.register('friend_links_onchain_meta', () => (
