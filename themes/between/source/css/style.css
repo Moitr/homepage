@@ -889,6 +889,11 @@ html.is-closing-article::view-transition-new(site-content) {
   color: var(--text);
 }
 
+.friends-proof-separator {
+  margin-left: 4px;
+  color: var(--faint);
+}
+
 .friends-grid {
   column-count: 4;
   column-gap: 16px;
