@@ -698,20 +698,7 @@ html.is-leaving .site-footer {
 }
 
 .friends-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
   margin-bottom: 34px;
-}
-
-.friends-eyebrow {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--accent);
-  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
-  font-size: 10px;
-  font-weight: 650;
 }
 
 .friends-header h1 {
@@ -721,23 +708,17 @@ html.is-leaving .site-footer {
   line-height: 1.12;
 }
 
-.friends-header p {
+.friends-source {
   margin: 10px 0 0;
   color: var(--muted);
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 1.7;
 }
 
-.friends-count {
-  flex: 0 0 auto;
-  padding-bottom: 5px;
-  color: var(--muted);
-  font-family: "Google Sans Code Variable", "SFMono-Regular", Consolas, monospace;
-  font-size: 10px;
-}
-
-.friends-count strong {
-  color: var(--text);
-  font-size: 13px;
+.friends-source a {
+  color: var(--accent);
+  font-weight: 650;
+  text-decoration: none;
 }
 
 .friends-proof {
@@ -2001,18 +1982,11 @@ html.is-leaving .site-footer {
   }
 
   .friends-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 14px;
     margin-bottom: 28px;
   }
 
   .friends-header h1 {
     font-size: 38px;
-  }
-
-  .friends-count {
-    padding-bottom: 0;
   }
 
   .friends-proof {
