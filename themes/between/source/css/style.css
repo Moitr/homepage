@@ -742,8 +742,7 @@ html.is-history-return:not(.is-leaving) .site-footer {
   line-height: 1.1;
 }
 
-.friends-tagline,
-.friends-source {
+.friends-tagline {
   color: var(--muted);
   font-size: 15px;
   line-height: 1.7;
@@ -754,15 +753,6 @@ html.is-history-return:not(.is-leaving) .site-footer {
   margin: 0 0 2px;
   font-size: 14px;
   text-align: right;
-}
-
-.friends-source {
-  display: flex;
-  justify-content: flex-end;
-  margin: 40px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
 }
 
 .friends-source a {
@@ -781,12 +771,18 @@ html.is-history-return:not(.is-leaving) .site-footer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 24px;
-  align-items: center;
+  align-items: start;
   padding: 14px 0;
   margin-bottom: 28px;
 }
 
-.friends-proof p {
+.friends-proof-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.friends-proof-copy > p {
   max-width: 560px;
   margin: 0;
   color: var(--muted);
@@ -794,9 +790,17 @@ html.is-history-return:not(.is-leaving) .site-footer {
   line-height: 1.65;
 }
 
-.friends-proof p strong {
+.friends-proof-copy > p:first-child {
+  margin-bottom: 2px;
+}
+
+.friends-proof-copy p strong {
   color: var(--green);
   font-weight: 650;
+}
+
+.friends-order {
+  color: var(--faint);
 }
 
 .friends-proof-meta {
@@ -2192,12 +2196,6 @@ html.is-history-return:not(.is-leaving) .site-footer {
   .friend-avatar {
     width: 48px;
     height: 48px;
-  }
-
-  .friends-source {
-    justify-content: flex-start;
-    margin-top: 30px;
-    padding-top: 15px;
   }
 
   .search-field {

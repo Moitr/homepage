@@ -2,6 +2,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { shuffledCopy } = require('../tools/lib/friend-links-page');
 
 const snapshotPath = path.join(hexo.base_dir, '.onchain', 'friend-links.json');
 const metadataPath = path.join(hexo.base_dir, '.onchain', 'friend-links-meta.json');
@@ -16,9 +17,9 @@ function readJson(file, fallback, label) {
   }
 }
 
-hexo.extend.helper.register('friend_links', () => {
+hexo.extend.helper.register('friend_links_randomized', () => {
   const snapshot = readJson(snapshotPath, { data: [] }, 'friend links snapshot');
-  return Array.isArray(snapshot.data) ? snapshot.data : [];
+  return shuffledCopy(snapshot.data);
 });
 
 hexo.extend.helper.register('friend_links_onchain_meta', () => (
