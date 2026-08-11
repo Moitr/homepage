@@ -5,26 +5,16 @@ const verifyUrl = chain.transaction_hash ? 'https://polygonscan.com/tx/' + chain
 %>
 <section class="friends-shell">
   <header class="friends-header">
-    <h1>朋友们</h1>
-    <p class="friends-tagline">海内存知己，天涯若比邻。</p>
+    <h1>友谊地久天长。</h1>
+    <p class="friends-proof">
+      友链数据已存证于 Polygon 区块链。
+      <% if (verifyUrl) { %><a href="<%= verifyUrl %>" target="_blank" rel="noopener noreferrer">验证记录 <span aria-hidden="true">↗</span></a><% } %>
+    </p>
   </header>
-
-  <aside class="friends-proof" aria-label="友链链上存证">
-    <div class="friends-proof-copy">
-      <p>Friend link data is synchronized automatically and archived on the <strong>Polygon blockchain</strong>.</p>
-      <p class="friends-notes"><span class="friends-order">友链顺序由构建时随机排序。</span><span class="friends-source"><a href="https://moitr.ren/friends" target="_blank" rel="noopener noreferrer">友链申请或查看原页面 <span aria-hidden="true">↗</span></a>，内容以原站为准。</span></p>
-    </div>
-    <% if (verifyUrl) { %>
-      <div class="friends-proof-meta">
-        <% if (chain.block_height) { %><span>Block <%= chain.block_height %></span><% } %>
-        <a href="<%= verifyUrl %>" target="_blank" rel="noopener noreferrer">Verify this record <span aria-hidden="true">↗</span></a>
-      </div>
-    <% } %>
-  </aside>
 
   <% if (links.length) { %>
     <div class="friends-grid">
-      <% links.forEach(function (link) { let hostname = ''; try { hostname = new URL(link.url).hostname.replace(/^www\./, ''); } catch (error) {} const initial = Array.from(String(link.name || '?').trim())[0] || '?'; %>
+      <% links.forEach(function (link) { const initial = Array.from(String(link.name || '?').trim()).slice(0, 2).join('') || '?'; %>
         <a class="friend-card" href="<%= link.url %>" target="_blank" rel="noopener noreferrer" aria-label="访问 <%= link.name %>">
           <span class="friend-avatar" aria-hidden="true">
             <span><%= initial %></span>
@@ -32,10 +22,8 @@ const verifyUrl = chain.transaction_hash ? 'https://polygonscan.com/tx/' + chain
           </span>
           <span class="friend-copy">
             <strong><%= link.name %></strong>
-            <span><%= link.description || hostname %></span>
-            <% if (link.description && hostname) { %><small><%= hostname %></small><% } %>
+            <% if (link.description) { %><span><%= link.description %></span><% } %>
           </span>
-          <span class="friend-arrow" aria-hidden="true">↗</span>
         </a>
       <% }); %>
     </div>
