@@ -223,14 +223,85 @@
     });
   });
 
-  document.querySelectorAll('[data-friend-avatar]').forEach(function (avatar) {
-    function hideBrokenAvatar() {
-      avatar.hidden = true;
+  var deferredImages = Array.prototype.slice.call(document.querySelectorAll('[data-deferred-image]'));
+  if (deferredImages.length) {
+    function loadDeferredImage(image) {
+      if (image.dataset.deferredState) return;
+      var shell = image.closest('[data-deferred-image-shell]');
+      image.dataset.deferredState = 'loading';
+      image.hidden = false;
+      if (shell) {
+        shell.classList.add('is-loading');
+        shell.setAttribute('aria-busy', 'true');
+      }
+
+      function finishLoadedImage() {
+        if (image.dataset.deferredState !== 'loading') return;
+        image.dataset.deferredState = 'decoding';
+
+        function revealImage() {
+          if (image.dataset.deferredState !== 'decoding') return;
+          image.dataset.deferredState = 'loaded';
+          if (shell) {
+            shell.classList.remove('is-loading');
+            shell.classList.add('is-loaded');
+            shell.setAttribute('aria-busy', 'false');
+          }
+        }
+
+        if (image.decode) image.decode().catch(function () {}).then(revealImage);
+        else revealImage();
+      }
+
+      function finishFailedImage() {
+        if (image.dataset.deferredState === 'loaded' || image.dataset.deferredState === 'error') return;
+        image.dataset.deferredState = 'error';
+        image.hidden = true;
+        if (shell) {
+          shell.classList.remove('is-loading');
+          shell.classList.add('is-error');
+          shell.setAttribute('aria-busy', 'false');
+        }
+      }
+
+      image.addEventListener('load', finishLoadedImage, { once: true });
+      image.addEventListener('error', finishFailedImage, { once: true });
+      if (image.dataset.deferredSrcset) image.srcset = image.dataset.deferredSrcset;
+      image.src = image.dataset.deferredSrc;
+
+      if (image.complete) {
+        if (image.naturalWidth > 0) finishLoadedImage();
+        else finishFailedImage();
+      }
     }
 
-    avatar.addEventListener('error', hideBrokenAvatar, { once: true });
-    if (avatar.complete && avatar.naturalWidth === 0) hideBrokenAvatar();
-  });
+    function startDeferredImages() {
+      if (!('IntersectionObserver' in window)) {
+        deferredImages.forEach(loadDeferredImage);
+        return;
+      }
+
+      var imageObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          imageObserver.unobserve(entry.target);
+          loadDeferredImage(entry.target);
+        });
+      }, { rootMargin: '360px 0px' });
+      deferredImages.forEach(function (image) { imageObserver.observe(image); });
+    }
+
+    function queueDeferredImages() {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(startDeferredImages, { timeout: 700 });
+      } else {
+        window.setTimeout(startDeferredImages, 0);
+      }
+    }
+
+    if (document.readyState === 'complete') queueDeferredImages();
+    else window.addEventListener('load', queueDeferredImages, { once: true });
+  }
 
   document.querySelectorAll('[data-onchain-expand]').forEach(function (button) {
     button.addEventListener('click', function () {
@@ -249,6 +320,7 @@
   if (latestBlockValue) {
     var latestBlockTimer;
     var latestBlockRequest;
+    var firstBlockRequest = true;
     var blockNumberElement = latestBlockValue.querySelector('[data-block-number]');
     var blockTicker = latestBlockValue.querySelector('.block-ticker');
     var liveWrapper = latestBlockValue.closest('.onchain-value-wrap');
@@ -295,6 +367,7 @@
       }
 
       latestBlockRequest = new AbortController();
+      if (firstBlockRequest && liveWrapper) liveWrapper.classList.add('is-block-loading');
       var requestTimeout = window.setTimeout(function () {
         latestBlockRequest.abort();
       }, 5000);
@@ -315,6 +388,8 @@
         if (liveWrapper) liveWrapper.classList.remove('is-live');
       }).finally(function () {
         window.clearTimeout(requestTimeout);
+        if (firstBlockRequest && liveWrapper) liveWrapper.classList.remove('is-block-loading');
+        firstBlockRequest = false;
         scheduleLatestBlock(4000);
       });
     }

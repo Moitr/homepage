@@ -518,6 +518,21 @@ html.is-leaving .site-footer {
   font-family: inherit;
 }
 
+.block-loader {
+  display: none;
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+}
+
+.onchain-value-wrap.is-block-loading .block-loader {
+  display: inline-block;
+  animation: loading-spin 700ms linear infinite;
+}
+
 .live-indicator {
   flex: 0 0 auto;
   width: 5px;
@@ -535,6 +550,10 @@ html.is-leaving .site-footer {
 
 @keyframes live-pulse {
   45%, 100% { box-shadow: 0 0 0 5px transparent; }
+}
+
+@keyframes loading-spin {
+  to { transform: rotate(1turn); }
 }
 
 .scroll-gradient-blur {
@@ -813,6 +832,54 @@ html.is-leaving .site-footer {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.deferred-image-shell {
+  position: relative;
+  overflow: hidden;
+  background: var(--soft);
+}
+
+.deferred-image {
+  opacity: 0;
+  filter: blur(16px);
+  transform: scale(1.035);
+  transition: opacity 360ms ease, filter 520ms ease, transform 520ms ease;
+}
+
+.deferred-image-shell.is-loading .deferred-image {
+  opacity: 0.42;
+}
+
+.deferred-image-shell.is-loaded .deferred-image {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+.deferred-image-shell::after {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 18px;
+  height: 18px;
+  margin: auto;
+  border: 2px solid color-mix(in srgb, var(--faint), transparent 45%);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.deferred-image-shell.is-loading::after {
+  opacity: 1;
+  animation: loading-spin 760ms linear infinite;
+}
+
+.deferred-image-shell.is-loaded::after,
+.deferred-image-shell.is-error::after {
+  display: none;
 }
 
 .friend-copy {
@@ -1497,6 +1564,40 @@ html.is-leaving .site-footer {
   box-shadow: 0 14px 36px rgba(20, 22, 26, 0.08);
 }
 
+.article-content .deferred-image-shell {
+  display: block;
+  width: 100%;
+  min-height: 180px;
+  aspect-ratio: 16 / 10;
+  margin: 38px 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 14px 36px rgba(20, 22, 26, 0.08);
+}
+
+.article-content .deferred-image-shell > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  object-fit: cover;
+}
+
+.article-content .deferred-image-shell.is-loaded {
+  min-height: 0;
+  aspect-ratio: auto;
+}
+
+.article-content .deferred-image-shell.is-loaded > img {
+  position: relative;
+  height: auto;
+  object-fit: contain;
+}
+
 .article-content .article-gallery {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1507,6 +1608,20 @@ html.is-leaving .site-footer {
 .article-content .article-gallery img {
   height: 100%;
   margin: 0;
+  object-fit: cover;
+}
+
+.article-content .article-gallery .deferred-image-shell,
+.article-content .article-gallery .deferred-image-shell.is-loaded {
+  min-height: 0;
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  box-shadow: none;
+}
+
+.article-content .article-gallery .deferred-image-shell.is-loaded > img {
+  position: absolute;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -1532,15 +1647,18 @@ html.is-leaving .site-footer {
   margin: 0 auto;
 }
 
-.article-content p:has(> img:only-child) {
+.article-content p:has(> img:only-child),
+.article-content p:has(> .deferred-image-shell:only-child) {
   margin: 42px -28px 14px;
 }
 
-.article-content p > img:only-child {
+.article-content p > img:only-child,
+.article-content p > .deferred-image-shell:only-child {
   margin: 0;
 }
 
-.article-content p:has(> img:only-child) + p:has(> em:only-child) {
+.article-content p:has(> img:only-child) + p:has(> em:only-child),
+.article-content p:has(> .deferred-image-shell:only-child) + p:has(> em:only-child) {
   margin: 0 0 36px;
   color: var(--muted);
   font-size: 13px;
@@ -1757,7 +1875,8 @@ html.is-leaving .site-footer {
     font-size: 24px;
   }
 
-  .article-content p:has(> img:only-child) {
+  .article-content p:has(> img:only-child),
+  .article-content p:has(> .deferred-image-shell:only-child) {
     margin: 32px 0 10px;
   }
 

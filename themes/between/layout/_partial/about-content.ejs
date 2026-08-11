@@ -51,6 +51,7 @@
                     <span class="onchain-text" title="Publication block"><%= item.value %></span>
                     <span class="block-height-arrow" aria-hidden="true">&rarr;</span>
                     <span class="onchain-text" data-latest-block data-rpc-url="https://polygon.drpc.org" title="Latest block"><span class="block-ticker"><span data-block-number><%= item.latestValue || item.value %></span></span></span>
+                    <span class="block-loader" title="Loading latest Polygon block" aria-hidden="true"></span>
                     <span class="live-indicator" title="Live Polygon block height" aria-hidden="true"></span>
                   </span>
                 <% } else { %>
