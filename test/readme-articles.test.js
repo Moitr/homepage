@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { loadArticles } = require('../tools/lib/article-onchain');
 const {
   expectedReadme,
   renderArticleList,
@@ -19,11 +20,12 @@ test('README article list matches the current posts', () => {
   assert.equal(current, expectedReadme(ROOT));
 
   const list = renderArticleList(ROOT);
-  assert.match(list, /https:\/\/moitr\.cc\/archives\/1\//);
-  assert.match(list, /https:\/\/moitr\.cc\/archives\/2\//);
-  assert.match(list, /https:\/\/moitr\.cc\/archives\/3\//);
-  assert.match(list, /\[Original\]\(https:\/\/moitr\.ren\/posts\/categories\/new-beginning\)/);
-  assert.match(list, /\[Original\]\(https:\/\/moitr\.ren\/posts\/categories\/build-permanent-blockchain-blog-polygon-hexo-github-actions\)/);
+  for (const article of loadArticles(ROOT)) {
+    assert.ok(list.includes(`https://moitr.cc/archives/${article.slug}/`));
+    if (article.originalUrl) {
+      assert.ok(list.includes(`[Original](${article.originalUrl})`));
+    }
+  }
 });
 
 test('README friend list matches the synchronized snapshot', () => {
