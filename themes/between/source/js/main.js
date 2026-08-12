@@ -527,3 +527,11 @@
   }
 
 }());
+
+if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+  window.addEventListener('load', function () {
+    var register = function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); };
+    if ('requestIdleCallback' in window) window.requestIdleCallback(register, { timeout: 5000 });
+    else window.setTimeout(register, 1500);
+  }, { once: true });
+}
