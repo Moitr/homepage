@@ -36,13 +36,10 @@
   ]; %>
   <!-- onchain-metadata:start -->
   <div class="details-column onchain-column">
-    <div class="onchain-heading">
-      <h2>On-chain</h2>
-      <span class="onchain-network">Polygon PoS</span>
-    </div>
+    <h2>On-chain</h2>
     <dl class="onchain-list">
       <% onchainItems.forEach(function (item) { %>
-        <div class="onchain-item<%= item.blockPair ? ' is-block-row' : '' %>">
+        <div>
           <dt><%= item.label %></dt>
           <dd class="<%= item.value ? '' : 'is-empty' %>">
             <% if (item.value) { %>
@@ -51,15 +48,9 @@
                   <a class="onchain-link" href="https://polygonscan.com/<%= item.path %>/<%= item.value %>" target="_blank" rel="noreferrer"><%= item.value %></a>
                 <% } else if (item.blockPair) { %>
                   <span class="block-height-pair">
-                    <span class="block-height-value">
-                      <span class="block-height-caption">Published</span>
-                      <span class="onchain-text" title="Publication block"><%= item.value %></span>
-                    </span>
+                    <span class="onchain-text" title="Publication block"><%= item.value %></span>
                     <span class="block-height-arrow" aria-hidden="true">&rarr;</span>
-                    <span class="block-height-value is-latest">
-                      <span class="block-height-caption">Latest</span>
-                      <span class="onchain-text" data-latest-block data-rpc-url="https://polygon.drpc.org" title="Latest block"><span class="block-ticker"><span data-block-number><%= item.latestValue || item.value %></span></span></span>
-                    </span>
+                    <span class="onchain-text" data-latest-block data-rpc-url="https://polygon.drpc.org" title="Latest block"><span class="block-ticker"><span data-block-number><%= item.latestValue || item.value %></span></span></span>
                     <span class="block-loader" title="Loading latest Polygon block" aria-hidden="true"></span>
                     <span class="live-indicator" title="Live Polygon block height" aria-hidden="true"></span>
                   </span>
