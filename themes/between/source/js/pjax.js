@@ -50,20 +50,6 @@
     var canonical = document.querySelector('link[rel="canonical"]');
     if (nextCanonical && canonical) canonical.href = nextCanonical.href;
 
-    ['highlight-light-theme', 'highlight-dark-theme'].forEach(function (id) {
-      var current = document.getElementById(id);
-      var incoming = next.getElementById(id);
-      if (!incoming && current) current.remove();
-      if (incoming && !current) {
-        document.head.appendChild(document.importNode(incoming, true));
-      }
-    });
-
-    var dark = root.classList.contains('dark');
-    var lightTheme = document.getElementById('highlight-light-theme');
-    var darkTheme = document.getElementById('highlight-dark-theme');
-    if (lightTheme) lightTheme.media = dark ? 'not all' : 'all';
-    if (darkTheme) darkTheme.media = dark ? 'all' : 'not all';
   }
 
   function updateActiveNavigation() {

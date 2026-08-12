@@ -83,11 +83,22 @@ async function desktopNavigation(browser) {
   await assertContentEntrance(page, '.post-group');
   await assertPjax(page);
 
+  const articleStylesheets = [];
+  const recordArticleStylesheet = (request) => {
+    if (request.resourceType() === 'stylesheet') articleStylesheets.push(request.url());
+  };
+  page.on('request', recordArticleStylesheet);
   await page.locator('.post-row a[href="/archives/4/"]').hover();
   await page.locator('.post-row a[href="/archives/4/"]').click();
   await page.waitForURL('**/archives/4/');
   await page.locator('.article-shell').waitFor();
+  page.off('request', recordArticleStylesheet);
+  assert.deepEqual(articleStylesheets, []);
   await assertDirectionalEntrance(page, '.article-header h1', 'article-content-pop');
+  assert.equal(await page.locator('link[id^="highlight-"]').count(), 0);
+  assert.equal(await page.locator('.article-content .hljs-keyword').first().evaluate((element) => (
+    getComputedStyle(element).color !== getComputedStyle(element.closest('code')).color
+  )), true);
   assert.equal(
     (await page.locator('.article-header-topline .article-back').textContent()).replace(/\s+/g, ' ').trim(),
     '← Back to Blogs'

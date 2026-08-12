@@ -21,18 +21,6 @@
         }
       }());
     </script>
-    <% const hasCode = page.layout === 'post' && /<(pre|figure class="highlight")\b/.test(page.content || ''); %>
-    <% if (hasCode) { %>
-      <link id="highlight-light-theme" rel="stylesheet" href="<%- url_for('/css/vendor/highlight-catppuccin-latte.css') %>">
-      <link id="highlight-dark-theme" rel="stylesheet" href="<%- url_for('/css/vendor/highlight-catppuccin-macchiato.css') %>" media="not all">
-      <script>
-        (function () {
-          var dark = document.documentElement.classList.contains('dark');
-          document.getElementById('highlight-light-theme').media = dark ? 'not all' : 'all';
-          document.getElementById('highlight-dark-theme').media = dark ? 'all' : 'not all';
-        }());
-      </script>
-    <% } %>
     <link rel="stylesheet" href="<%- url_for('/css/style.css') %>?v=<%= assetVersion %>">
   </head>
   <body class="<%= page.layout ? 'page-' + page.layout : '' %>">

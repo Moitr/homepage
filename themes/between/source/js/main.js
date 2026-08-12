@@ -43,12 +43,7 @@
 
   function updateThemeColor() {
     var meta = document.querySelector('meta[name="theme-color"]');
-    var isDark = root.classList.contains('dark');
-    var highlightLight = document.getElementById('highlight-light-theme');
-    var highlightDark = document.getElementById('highlight-dark-theme');
     if (meta) meta.setAttribute('content', root.classList.contains('dark') ? '#090a0b' : '#ffffff');
-    if (highlightLight) highlightLight.media = isDark ? 'not all' : 'all';
-    if (highlightDark) highlightDark.media = isDark ? 'all' : 'not all';
   }
 
   themeButtons.forEach(function (button) {
