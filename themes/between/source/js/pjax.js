@@ -7,6 +7,7 @@
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var nativeTransitions = !reducedMotion && typeof document.startViewTransition === 'function';
   var directionTimer;
+  var navigationInProgress = false;
 
   function articlePath(url) {
     var pathname = new URL(url || window.location.href, window.location.href).pathname;
@@ -403,7 +404,7 @@
   }
 
   function initializePageEntrance() {
-    if (reducedMotion) return function () {};
+    if (reducedMotion || (nativeTransitions && navigationInProgress)) return function () {};
     var selectors = [
       '.about-intro h1',
       '.about-intro > p',
@@ -460,6 +461,7 @@
     native: nativeTransitions,
     hooks: {
       'visit:start': function (visit) {
+        navigationInProgress = true;
         root.classList.add('is-pjax-ready');
         setNavigationDirection(visit);
         if (reducedMotion) visit.animation.animate = false;
@@ -477,6 +479,7 @@
         root.classList.remove('is-history-return');
         updateActiveNavigation();
         initializePage();
+        navigationInProgress = false;
         document.dispatchEvent(new CustomEvent('site:page-view'));
       }
     }

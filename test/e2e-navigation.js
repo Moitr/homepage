@@ -29,17 +29,23 @@ async function assertTransitionFinished(page) {
 }
 
 async function assertContentEntrance(page, selector) {
-  assert.equal(await page.locator(selector).first().evaluate((element) => (
-    element.classList.contains('page-enter-item') &&
-    getComputedStyle(element).animationName === 'page-content-rise'
-  )), true);
+  assert.equal(await page.locator(selector).first().evaluate((element) => {
+    var nativeTransitions = typeof document.startViewTransition === 'function';
+    return nativeTransitions
+      ? !element.classList.contains('page-enter-item')
+      : element.classList.contains('page-enter-item') &&
+        getComputedStyle(element).animationName === 'page-content-rise';
+  }), true);
 }
 
 async function assertDirectionalEntrance(page, selector, animationName) {
-  assert.equal(await page.locator(selector).first().evaluate((element, expected) => (
-    element.classList.contains('page-enter-item') &&
-    getComputedStyle(element).animationName === expected
-  ), animationName), true);
+  assert.equal(await page.locator(selector).first().evaluate((element, expected) => {
+    var nativeTransitions = typeof document.startViewTransition === 'function';
+    return nativeTransitions
+      ? !element.classList.contains('page-enter-item')
+      : element.classList.contains('page-enter-item') &&
+        getComputedStyle(element).animationName === expected;
+  }, animationName), true);
 }
 
 async function desktopNavigation(browser) {
