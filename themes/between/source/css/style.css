@@ -247,6 +247,43 @@ html.is-pjax-ready:not(.swup-native).is-animating .site-footer {
   view-transition-name: site-content;
 }
 
+/* Shared article-title fallback for browsers without View Transition API. */
+.shared-title-ghost {
+  position: fixed;
+  z-index: 100;
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 1;
+  will-change: transform, opacity;
+}
+
+.shared-title-ghost.is-moving {
+  animation: shared-title-move 680ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+[data-shared-title-target] {
+  transition: opacity 100ms ease;
+}
+
+@keyframes shared-title-move {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+  72% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--shared-title-x), var(--shared-title-y), 0)
+      scale(var(--shared-title-scale-x), var(--shared-title-scale-y));
+  }
+}
+
 .site-footer {
   view-transition-name: site-footer;
 }
