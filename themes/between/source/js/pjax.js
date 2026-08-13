@@ -9,96 +9,6 @@
   var directionTimer;
   var navigationInProgress = false;
   var sharedTitleTimer;
-  var fallbackSharedTitle;
-
-  function clearFallbackSharedTitle() {
-    if (!fallbackSharedTitle) return;
-    window.clearTimeout(fallbackSharedTitle.timer);
-    if (fallbackSharedTitle.target) {
-      fallbackSharedTitle.target.style.removeProperty('opacity');
-      fallbackSharedTitle.target.removeAttribute('data-shared-title-target');
-    }
-    if (fallbackSharedTitle.ghost && fallbackSharedTitle.ghost.parentNode) {
-      fallbackSharedTitle.ghost.parentNode.removeChild(fallbackSharedTitle.ghost);
-    }
-    fallbackSharedTitle = null;
-  }
-
-  function fallbackTitleElement(visit) {
-    var fromArticle = articlePath(visit.from.url);
-    var toArticle = articlePath(visit.to.url);
-    if (fromArticle && !toArticle) return document.querySelector('.article-header h1');
-    if (!fromArticle && toArticle) {
-      var trigger = visit.trigger && visit.trigger.el;
-      return trigger && (trigger.closest('.post-row a') || trigger.closest('.post-row'));
-    }
-    return null;
-  }
-
-  function prepareFallbackSharedTitle(visit) {
-    clearFallbackSharedTitle();
-    if (nativeTransitions || reducedMotion) return;
-    var source = fallbackTitleElement(visit);
-    if (!source) return;
-    var rect = source.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-    var computed = window.getComputedStyle(source);
-    var ghost = document.createElement('div');
-    ghost.className = 'shared-title-ghost';
-    ghost.textContent = source.textContent.trim();
-    ghost.style.left = rect.left + 'px';
-    ghost.style.top = rect.top + 'px';
-    ghost.style.width = rect.width + 'px';
-    ghost.style.height = rect.height + 'px';
-    ghost.style.fontFamily = computed.fontFamily;
-    ghost.style.fontSize = computed.fontSize;
-    ghost.style.fontWeight = computed.fontWeight;
-    ghost.style.lineHeight = computed.lineHeight;
-    ghost.style.letterSpacing = computed.letterSpacing;
-    ghost.style.color = computed.color;
-    ghost.style.textAlign = computed.textAlign;
-    ghost.style.textDecoration = computed.textDecoration;
-    ghost.style.setProperty('--shared-title-x', '0px');
-    ghost.style.setProperty('--shared-title-y', '0px');
-    ghost.style.setProperty('--shared-title-scale-x', '1');
-    ghost.style.setProperty('--shared-title-scale-y', '1');
-    document.body.appendChild(ghost);
-    fallbackSharedTitle = {
-      ghost: ghost,
-      sourceRect: rect,
-      source: source,
-      direction: articlePath(visit.to.url) ? 'open' : 'close',
-      target: null,
-      timer: null
-    };
-  }
-
-  function animateFallbackSharedTitle(visit) {
-    var state = fallbackSharedTitle;
-    if (!state || !state.ghost) return;
-    var target = articlePath(visit.to.url)
-      ? document.querySelector('.article-header h1')
-      : articleLinkIn(document, visit.from.url);
-    if (!target) {
-      clearFallbackSharedTitle();
-      return;
-    }
-    var targetRect = target.getBoundingClientRect();
-    if (!targetRect.width || !targetRect.height) {
-      clearFallbackSharedTitle();
-      return;
-    }
-    state.target = target;
-    target.setAttribute('data-shared-title-target', '');
-    target.style.setProperty('opacity', '0', 'important');
-    var sourceRect = state.sourceRect;
-    state.ghost.style.setProperty('--shared-title-x', (targetRect.left - sourceRect.left) + 'px');
-    state.ghost.style.setProperty('--shared-title-y', (targetRect.top - sourceRect.top) + 'px');
-    state.ghost.style.setProperty('--shared-title-scale-x', String(targetRect.width / sourceRect.width));
-    state.ghost.style.setProperty('--shared-title-scale-y', String(targetRect.height / sourceRect.height));
-    state.ghost.classList.add('is-moving');
-    state.timer = window.setTimeout(clearFallbackSharedTitle, 760);
-  }
 
   function clearSharedTitle() {
     window.clearTimeout(sharedTitleTimer);
@@ -127,10 +37,7 @@
   }
 
   function prepareSharedTitle(visit) {
-    if (!nativeTransitions) {
-      prepareFallbackSharedTitle(visit);
-      return;
-    }
+    if (!nativeTransitions) return;
     var fromArticle = articlePath(visit.from.url);
     var toArticle = articlePath(visit.to.url);
     if (!fromArticle && toArticle) {
@@ -601,15 +508,10 @@
             ? visit.to.document && visit.to.document.querySelector('.article-header h1')
             : articleLinkIn(visit.to.document, visit.to.url);
           if ((fromArticle && !toArticle) || (!fromArticle && toArticle)) markSharedTitle(incomingTitle);
-        } else {
-          window.requestAnimationFrame(function () {
-            animateFallbackSharedTitle(visit);
-          });
         }
       },
       'visit:abort': function () {
         clearSharedTitle();
-        clearFallbackSharedTitle();
       },
       'page:view': function () {
         root.classList.remove('is-history-return');

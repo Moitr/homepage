@@ -120,7 +120,6 @@ async function desktopNavigation(browser) {
   await page.waitForURL('**/blog/');
   await page.locator('.blog-shell').waitFor();
   await assertDirectionalEntrance(page, '.post-group', 'page-content-return');
-  assert.equal(await page.locator('.shared-title-ghost').count(), 0);
   await context.close();
 }
 
