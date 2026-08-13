@@ -8,46 +8,6 @@
   var nativeTransitions = !reducedMotion && typeof document.startViewTransition === 'function';
   var directionTimer;
   var navigationInProgress = false;
-  var sharedTitleTimer;
-
-  function clearSharedTitle() {
-    window.clearTimeout(sharedTitleTimer);
-    document.querySelectorAll('[data-shared-article-title]').forEach(function (element) {
-      element.style.removeProperty('view-transition-name');
-      element.removeAttribute('data-shared-article-title');
-    });
-    root.classList.remove('has-shared-article-title');
-  }
-
-  function markSharedTitle(element) {
-    if (!nativeTransitions || !element) return;
-    clearSharedTitle();
-    element.style.setProperty('view-transition-name', 'article-title');
-    element.setAttribute('data-shared-article-title', '');
-    root.classList.add('has-shared-article-title');
-  }
-
-  function articleLinkIn(documentNode, url) {
-    if (!documentNode) return null;
-    var pathname = new URL(url || window.location.href, window.location.href).pathname.replace(/\/+$/, '') || '/';
-    return Array.prototype.slice.call(documentNode.querySelectorAll('.post-row a[href]')).find(function (link) {
-      var linkPath = new URL(link.href, window.location.href).pathname.replace(/\/+$/, '') || '/';
-      return linkPath === pathname;
-    });
-  }
-
-  function prepareSharedTitle(visit) {
-    if (!nativeTransitions) return;
-    var fromArticle = articlePath(visit.from.url);
-    var toArticle = articlePath(visit.to.url);
-    if (!fromArticle && toArticle) {
-      markSharedTitle(visit.trigger && visit.trigger.el);
-      return;
-    }
-    if (fromArticle && !toArticle) {
-      markSharedTitle(document.querySelector('.article-header h1'));
-    }
-  }
 
   function articlePath(url) {
     var pathname = new URL(url || window.location.href, window.location.href).pathname;
@@ -490,7 +450,6 @@
         navigationInProgress = true;
         root.classList.add('is-pjax-ready');
         setNavigationDirection(visit);
-        prepareSharedTitle(visit);
         if (reducedMotion) visit.animation.animate = false;
         else visit.animation.wait = true;
         cancelVisiblePrefetch();
@@ -501,26 +460,12 @@
       },
       'content:replace': function (visit, args) {
         syncHead(args.page.html);
-        if (nativeTransitions) {
-          var fromArticle = articlePath(visit.from.url);
-          var toArticle = articlePath(visit.to.url);
-          var incomingTitle = toArticle
-            ? visit.to.document && visit.to.document.querySelector('.article-header h1')
-            : articleLinkIn(visit.to.document, visit.to.url);
-          if ((fromArticle && !toArticle) || (!fromArticle && toArticle)) markSharedTitle(incomingTitle);
-        }
-      },
-      'visit:abort': function () {
-        clearSharedTitle();
       },
       'page:view': function () {
         root.classList.remove('is-history-return');
         updateActiveNavigation();
         initializePage();
         navigationInProgress = false;
-        if (nativeTransitions) {
-          sharedTitleTimer = window.setTimeout(clearSharedTitle, 900);
-        }
         document.dispatchEvent(new CustomEvent('site:page-view'));
       }
     }
