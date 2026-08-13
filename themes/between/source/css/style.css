@@ -272,6 +272,18 @@ html.is-pjax-ready:not(.swup-native).is-animating .site-footer {
   animation: pjax-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+html.has-shared-article-title::view-transition-group(article-title) {
+  z-index: 4;
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.has-shared-article-title::view-transition-old(article-title),
+html.has-shared-article-title::view-transition-new(article-title) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @keyframes pjax-fade-out {
   to {
     opacity: 0;
