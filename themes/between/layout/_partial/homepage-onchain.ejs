@@ -7,8 +7,10 @@
 ]; %>
 <!-- onchain-metadata:start -->
 <div class="onchain-popover" data-onchain-popover>
-  <button class="onchain-summary" type="button" data-onchain-popover-toggle aria-expanded="false" aria-controls="homepage-onchain-details">
-    <span>Archived at block</span>
+  <button class="onchain-summary" type="button" data-onchain-popover-toggle aria-expanded="false" aria-controls="homepage-onchain-details" aria-label="Show on-chain verification details">
+    <span>Verified on Polygon</span>
+    <span aria-hidden="true">&middot;</span>
+    <span>Block</span>
     <strong><%= onchain.block_height || '--' %></strong>
     <span class="onchain-summary-arrow" aria-hidden="true">&#8599;</span>
   </button>
