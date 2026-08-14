@@ -71,7 +71,7 @@ jobs:
           pnpm clean
           pnpm build
 
-      - name: Publish homepage to Polygon mainnet
+      - name: Publish articles and friend links to Polygon mainnet
         id: polygon
         shell: bash
         env:
@@ -84,7 +84,6 @@ jobs:
             echo "uploaded=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          pnpm onchain:publish
           pnpm onchain:publish:articles
           pnpm onchain:publish:links
           echo "configured=true" >> "$GITHUB_OUTPUT"

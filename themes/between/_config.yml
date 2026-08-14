@@ -30,11 +30,4 @@ about:
       value: INFP-A
     - label: Contact me
       value: i@moitr.ren
-  onchain:
-    wallet_address: ''
-    block_height: ''
-    latest_block_height: ''
-    transaction_hash: ''
-    contract_address: ''
-
 footer: ''

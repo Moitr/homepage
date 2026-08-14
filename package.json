@@ -15,8 +15,6 @@
     "readme:update": "node tools/update-readme-articles.js",
     "readme:check": "node tools/update-readme-articles.js --check",
     "links:sync": "node tools/sync-friend-links.js",
-    "onchain:check": "node tools/publish-homepage-polygon.js --check",
-    "onchain:publish": "node tools/publish-homepage-polygon.js",
     "onchain:check:articles": "node tools/publish-articles-polygon.js --check",
     "onchain:publish:articles": "node tools/publish-articles-polygon.js",
     "onchain:check:links": "node tools/publish-friend-links-polygon.js --check",

@@ -506,89 +506,6 @@ html.is-closing-article::view-transition-new(site-content) {
   line-height: 1.5;
 }
 
-.onchain-popover {
-  position: relative;
-  width: fit-content;
-  max-width: 100%;
-}
-
-.onchain-summary {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  gap: 7px;
-  padding: 0;
-  background: transparent;
-  color: var(--text);
-  font: inherit;
-  line-height: inherit;
-  cursor: pointer;
-  transition: color 160ms ease;
-}
-
-.onchain-summary strong {
-  color: var(--text);
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: inherit;
-  font-weight: 550;
-}
-
-.onchain-summary-arrow {
-  color: var(--faint);
-  font-size: 15px;
-  transition: color 160ms ease, transform 180ms ease;
-}
-
-.onchain-summary:focus-visible {
-  outline: 0;
-}
-
-.onchain-summary:hover .onchain-summary-arrow,
-.onchain-summary:focus-visible .onchain-summary-arrow,
-.onchain-popover.is-open .onchain-summary-arrow {
-  color: var(--accent);
-  transform: translate(1px, -1px);
-}
-
-.onchain-panel {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 80;
-  width: 100%;
-  max-height: min(72vh, 480px);
-  overflow: auto;
-  padding: 24px max(20px, calc((100vw - var(--content)) / 2)) 28px;
-  border-top: 1px solid var(--line);
-  border-radius: 0;
-  background: var(--bg);
-  box-shadow: 0 -16px 42px rgba(32, 33, 36, 0.14);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(7px);
-  transition: opacity 230ms ease, transform 280ms cubic-bezier(0.22, 1, 0.36, 1), visibility 230ms ease;
-}
-
-.dark .onchain-panel {
-  box-shadow: 0 -16px 42px rgba(0, 0, 0, 0.42);
-}
-
-.onchain-panel h2 {
-  margin: 0 0 8px;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.onchain-popover.is-open .onchain-panel {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
 .onchain-list,
 .onchain-list dd {
   margin: 0;
@@ -2170,29 +2087,6 @@ code .hljs-deletion { color: #d20f39; background: rgba(210, 15, 57, 0.15); }
   display: block;
 }
 
-.site-footer-line > .onchain-popover {
-  display: inline-block;
-  vertical-align: baseline;
-}
-
-.site-footer-separator {
-  color: var(--faint);
-  white-space: pre;
-}
-
-.site-footer .onchain-summary {
-  color: var(--text);
-}
-
-.site-footer .onchain-summary strong {
-  color: var(--text);
-}
-
-.site-footer .onchain-panel {
-  right: 0;
-  left: 0;
-}
-
 .site-footer::before {
   display: block;
   height: 1px;
@@ -2459,11 +2353,6 @@ code .hljs-deletion { color: #d20f39; background: rgba(210, 15, 57, 0.15); }
     padding: 0 0 96px;
   }
 
-  .onchain-panel {
-    width: 100%;
-    padding: 18px 16px 24px;
-  }
-
   .details-column h2 {
     margin-bottom: 6px;
     font-size: 16px;
@@ -2561,13 +2450,6 @@ code .hljs-deletion { color: #d20f39; background: rgba(210, 15, 57, 0.15); }
     display: block;
   }
 
-  .site-footer-line > .onchain-popover {
-    width: auto;
-  }
-
-  .site-footer .onchain-summary {
-    font-size: 12px;
-  }
 }
 
 @media (max-width: 420px) {

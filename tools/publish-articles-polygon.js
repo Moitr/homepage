@@ -15,7 +15,7 @@ const {
   POLYGON_EXPLORER_URL,
   POLYGON_RPC_URL,
   DETERMINISTIC_DEPLOYER
-} = require('./lib/homepage-onchain');
+} = require('./lib/polygon');
 const {
   ARTICLE_DEPLOYMENT_SALT,
   compileArticleArchive,

@@ -17,7 +17,7 @@ const {
 } = require('ethers');
 const {
   DETERMINISTIC_DEPLOYER
-} = require('./homepage-onchain');
+} = require('./polygon');
 
 const ARTICLE_DEPLOYMENT_SALT = keccak256(toUtf8Bytes('moitr.article.archive.polygon.v1'));
 const MAX_ARTICLE_BYTES = 24_576;

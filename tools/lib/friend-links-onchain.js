@@ -10,7 +10,7 @@ const {
   keccak256,
   toUtf8Bytes
 } = require('ethers');
-const { DETERMINISTIC_DEPLOYER } = require('./homepage-onchain');
+const { DETERMINISTIC_DEPLOYER } = require('./polygon');
 
 const FRIEND_LINKS_ENDPOINT = 'https://mx-server.moitr.ren/api/v3/links/all';
 const FRIEND_LINKS_DEPLOYMENT_SALT = keccak256(toUtf8Bytes('moitr.friend-links.archive.polygon.v1'));
