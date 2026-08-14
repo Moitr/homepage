@@ -1,4 +1,9 @@
 <% const build = build_meta(); %>
 <footer class="site-footer">
-  <span>Build <% if (build.url) { %><a class="site-footer-build" href="<%= build.url %>" target="_blank" rel="noopener noreferrer" aria-label="View commit <%= build.hash %> on GitHub"><code><%= build.hash %></code></a><% } else { %><code><%= build.hash %></code><% } %> &middot; <time datetime="<%= build.datetime %>"><%= build.time %> UTC+8</time></span>
+  <div class="site-footer-line">
+    <span>Build <% if (build.url) { %><a class="site-footer-build" href="<%= build.url %>" target="_blank" rel="noopener noreferrer" aria-label="View commit <%= build.hash %> on GitHub"><code><%= build.hash %></code></a><% } else { %><code><%= build.hash %></code><% } %> &middot; <time datetime="<%= build.datetime %>"><%= build.time %> UTC+8</time></span>
+    <% if (page.layout === 'index' || page.layout === 'about' || page.path === 'index.html' || page.path === 'about/index.html') { %>
+      <%- partial('_partial/homepage-onchain') %>
+    <% } %>
+  </div>
 </footer>

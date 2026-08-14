@@ -186,6 +186,42 @@
     });
   }
 
+  function initializeOnchainPopover() {
+    var popover = document.querySelector('[data-onchain-popover]');
+    var toggle = popover && popover.querySelector('[data-onchain-popover-toggle]');
+    if (!popover || !toggle) return function () {};
+
+    function setOpen(open) {
+      popover.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    }
+
+    function onToggle(event) {
+      event.preventDefault();
+      setOpen(!popover.classList.contains('is-open'));
+    }
+
+    function onDocumentClick(event) {
+      if (!popover.contains(event.target)) setOpen(false);
+    }
+
+    function onKeydown(event) {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        toggle.focus();
+      }
+    }
+
+    toggle.addEventListener('click', onToggle);
+    document.addEventListener('click', onDocumentClick);
+    document.addEventListener('keydown', onKeydown);
+    return function () {
+      toggle.removeEventListener('click', onToggle);
+      document.removeEventListener('click', onDocumentClick);
+      document.removeEventListener('keydown', onKeydown);
+    };
+  }
+
   function initializeGreeting() {
     var greeting = document.querySelector('[data-typing-greeting]');
     if (!greeting) return function () {};
@@ -241,7 +277,7 @@
           phraseIndex = (phraseIndex + 1) % phrases.length;
           fit(phrases[phraseIndex]);
           schedule(320);
-        } else schedule(42);
+        } else schedule(58);
         return;
       }
       characters = Array.from(phrases[phraseIndex]);
@@ -249,14 +285,14 @@
       greeting.textContent = characters.slice(0, characterIndex).join('');
       if (characterIndex === characters.length) {
         deleting = true;
-        schedule(1800);
-      } else schedule(88);
+        schedule(2200);
+      } else schedule(112);
     }
 
     function resize() { if (visible()) fit(phrases[phraseIndex] || phrases[0]); }
     fit(phrases[0]);
     window.addEventListener('resize', resize);
-    if (!reducedMotion && phrases.length > 1) schedule(1800);
+    if (!reducedMotion && phrases.length > 1) schedule(2200);
     return function () {
       stopped = true;
       window.clearTimeout(timer);
@@ -428,7 +464,7 @@
   }
 
   function initializePage() {
-    var cleanups = [initializeDeferredImages(), initializeGreeting(), initializeLatestBlock(), initializeToc(), initializePageEntrance()];
+    var cleanups = [initializeDeferredImages(), initializeGreeting(), initializeLatestBlock(), initializeToc(), initializePageEntrance(), initializeOnchainPopover()];
     initializeCopyButtons();
     initializeShareButtons();
     initializeExpandButtons();

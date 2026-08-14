@@ -53,6 +53,9 @@ async function desktopNavigation(browser) {
   const page = await context.newPage();
   await page.goto(`${SITE_URL}/`, { waitUntil: 'networkidle' });
   await assertPjax(page);
+  const onchainSummary = page.locator('.site-footer .onchain-summary');
+  await onchainSummary.hover();
+  assert.equal(await page.locator('.site-footer .onchain-panel').evaluate((element) => getComputedStyle(element).visibility), 'visible');
 
   await page.locator('.desktop-nav .nav-link[href="/friends/"]').hover();
   await page.locator('.desktop-nav .nav-link[href="/friends/"]').click();

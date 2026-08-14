@@ -137,7 +137,7 @@
             return;
           }
 
-          scheduleGreeting(42);
+          scheduleGreeting(58);
           return;
         }
 
@@ -147,14 +147,14 @@
 
         if (characterIndex === characters.length) {
           deleting = true;
-          scheduleGreeting(1800);
+          scheduleGreeting(2200);
           return;
         }
 
-        scheduleGreeting(88);
+        scheduleGreeting(112);
       }
 
-      scheduleGreeting(1800);
+      scheduleGreeting(2200);
     }
   }
 
