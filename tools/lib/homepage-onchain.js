@@ -37,7 +37,7 @@ function normalizeHomepage(html) {
   normalized = replaceExactlyOnce(
     normalized,
     /<footer class="site-footer">[\s\S]*?<\/footer>/g,
-    '<footer class="site-footer"></footer>',
+    (match) => match,
     'site footer'
   );
   normalized = replaceExactlyOnce(
@@ -45,6 +45,12 @@ function normalizeHomepage(html) {
     /<!-- onchain-metadata:start -->[\s\S]*?<!-- onchain-metadata:end -->/g,
     '<!-- onchain-metadata -->',
     'on-chain metadata region'
+  );
+  normalized = replaceExactlyOnce(
+    normalized,
+    /<footer class="site-footer">[\s\S]*?<\/footer>/g,
+    '<footer class="site-footer"></footer>',
+    'site footer'
   );
   return normalized;
 }

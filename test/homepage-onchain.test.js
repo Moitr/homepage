@@ -30,6 +30,15 @@ test('normalization ignores build metadata and on-chain display values', () => {
   assert.equal(homepageContentHash(first), homepageContentHash(second));
 });
 
+test('normalization supports metadata inside the site footer', () => {
+  const first = `<!doctype html><html><body><main>Hello</main>
+    <footer class="site-footer"><!-- onchain-metadata:start --><div>first</div><!-- onchain-metadata:end --><code>abc</code></footer>
+  </body></html>`;
+  const second = first.replace('first', 'second').replace('abc', 'def');
+
+  assert.equal(homepageContentHash(first), homepageContentHash(second));
+});
+
 test('normalization detects substantive homepage changes', () => {
   assert.notEqual(
     homepageContentHash(page({ body: 'Before' })),
