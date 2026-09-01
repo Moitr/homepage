@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "source/_posts/**"
+      - ".content-sync-map.json"
+      - "README.md"
   workflow_dispatch:
   schedule:
     # Every 8 hours: 08:20, 16:20 and 00:20 Asia/Shanghai.
@@ -25,6 +29,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -50,13 +56,40 @@ jobs:
       - name: Update README content lists
         run: pnpm readme:update
 
+      - name: Detect article or friend changes
+        id: content
+        shell: bash
+        env:
+          EVENT_BEFORE: ${{ github.event.before }}
+          EVENT_SHA: ${{ github.sha }}
+        run: |
+          git add -A -- source/_posts .content-sync-map.json README.md
+          changed=false
+          if ! git diff --cached --quiet; then
+            changed=true
+          fi
+          if [ "$GITHUB_EVENT_NAME" = "push" ] &&
+             [ "$(git log -1 --pretty=%s)" != "content: synchronize site data" ] &&
+             [ "$EVENT_BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            if ! git diff --quiet "$EVENT_BEFORE" "$EVENT_SHA" -- source/_posts .content-sync-map.json README.md; then
+              changed=true
+            fi
+          fi
+          if [ "$changed" = true ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Article and friend content is already current."
+          echo "changed=false" >> "$GITHUB_OUTPUT"
+
       - name: Test on-chain publisher
+        if: steps.content.outputs.changed == 'true'
         run: pnpm test
 
       - name: Commit synchronized content
+        if: steps.content.outputs.changed == 'true'
         shell: bash
         run: |
-          git add -A -- source/_posts .content-sync-map.json README.md
           if git diff --cached --quiet; then
             echo "Synchronized content is already current."
             exit 0
@@ -67,11 +100,13 @@ jobs:
           git push origin HEAD:main
 
       - name: Build site
+        if: steps.content.outputs.changed == 'true'
         run: |
           pnpm clean
           pnpm build
 
       - name: Publish articles and friend links to Polygon mainnet
+        if: steps.content.outputs.changed == 'true'
         id: polygon
         shell: bash
         env:
@@ -89,12 +124,13 @@ jobs:
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
       - name: Rebuild with on-chain metadata
-        if: steps.polygon.outputs.configured == 'true'
+        if: steps.content.outputs.changed == 'true' && steps.polygon.outputs.configured == 'true'
         run: |
           pnpm clean
           pnpm build
 
       - name: Publish pages branch
+        if: steps.content.outputs.changed == 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
